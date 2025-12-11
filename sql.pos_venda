@@ -44,7 +44,7 @@ SELECT
     p.contrato_assinado,
     p.proposta_paga,
 
-    /* CAMPOS DA TB_POS_VENDAS (pv) — removido pv.id_proposta para evitar duplicidade */
+    /* CAMPOS DA TB_POS_VENDAS (pv) */
     pv.ponto_venda AS ponto_venda_posvenda,
     pv.cd_grupo AS cd_grupo_posvenda,
     pv.cd_cota AS cd_cota_posvenda,
@@ -52,7 +52,10 @@ SELECT
     pv.valor_bem,
     pv.tipo_bem AS tipo_bem_posvenda,
     pv.data_cadastro_orb,
-    pv.data_proxima_assembleia,
+
+    /* CAMPO CONVERTIDO US → BR */
+    CONVERT(VARCHAR(10), pv.data_proxima_assembleia, 103) AS data_proxima_assembleia_BR,
+
     pv.forma_pagamento AS forma_pagamento_posvenda,
     pv.situacao_contrato,
     pv.data_contemplacao AS dt_contemplacao_posvenda,
@@ -74,6 +77,7 @@ SELECT
 
 FROM tb_propostas p
 INNER JOIN tb_pos_vendas pv
-        ON p.id_proposta = pv.id_proposta
+    ON p.id_proposta = pv.id_proposta
 
-WHERE pv.data_alocacao IS NOT NULL;
+WHERE 
+    pv.data_alocacao IS NOT NULL
