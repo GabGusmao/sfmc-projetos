@@ -1,0 +1,10 @@
+SELECT
+    pv.id_proposta,
+    pv.cd_grupo,
+    pv.cd_cota,
+    pv.ponto_venda,
+    pv.data_alocacao
+FROM tb_pos_vendas pv
+WHERE 
+    pv.data_alocacao IS NULL
+    OR LTRIM(RTRIM(CAST(pv.data_alocacao AS VARCHAR(50)))) = '';
