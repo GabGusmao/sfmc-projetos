@@ -1,79 +1,99 @@
-/* Resultado da query: 
--Apenas propostas Ativas
--Apenas ontem e hoje
--Apenas PDVs e-commerce
--Não envia duplicado (valida histórico)
--Não força reentrada em Journey */
-
-SELECT    
+SELECT
+    /* CHAVE DO JOURNEY */
     p.id_proposta,
-    p.id_produto,
-    p.cnpj_cpf,
-    p.nome_completo,
-    p.email,
-    p.celular,
-    p.dt_proposta,
-    p.dt_fechamento,
-    p.dt_validade,
-    p.dt_ultima_modificacao,
-    p.dt_venda,
-    p.cd_ponto_venda,
-    p.vendedor,
-    p.status_proposta,
-    p.valor_proposta,
-    p.cd_promocional,
-    p.tem_seguro,
-    p.tipo_pagamento,
-    p.dt_pagamento,
-    p.link_boleto,
-    p.link_cartao,
-    p.link_contrato_naoassinado,
-    p.cd_pix,
-    p.end_point,
-    p.tipo_bem,
-    p.ponto_venda,
-    p.tipo_lance,
-    p.primeiro_nome,
-    p.cd_pix_unificado,
-    p.valor_pix_unificado,
-    p.debito_automatico,
-    p.dt_adesao,
-    p.dt_alocacao,
-    p.link_contrato_assinado,
-    p.uber_retencao,
-    p.dt_contemplacao,
-    p.acesso_aplicativo,
-    p.contrato_assinado,
-    p.proposta_paga,
+    p.cnpj_cpf AS ContactKey,
 
-    CONVERT(CHAR(2), DATEPART(DAY, GETDATE())) AS dia_Entrada,
-    'br' AS Locale
+    /* CAMPOS ORIGINAIS COM TRATAMENTO */
+    COALESCE(p.id_produto, 'Vazio') AS id_produto,
+    COALESCE(p.cnpj_cpf, 'Vazio') AS cnpj_cpf,
+    COALESCE(p.nome_completo, 'Vazio') AS nome_completo,
+    COALESCE(p.email, 'Vazio') AS email,
+    COALESCE(p.celular, 'Vazio') AS celular,
 
-FROM tb_propostas AS p
+    /* DATAS */
+    CASE WHEN p.dt_proposta IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_proposta, 'dd/MM/yyyy HH:mm:ss') END AS dt_proposta,
 
-WHERE 
-    p.status_proposta = 'Ativa'
-    AND p.email NOT LIKE '%bamaq%'
+    CASE WHEN p.dt_fechamento IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_fechamento, 'dd/MM/yyyy HH:mm:ss') END AS dt_fechamento,
 
-    /* HOJE + ONTEM */
-    AND CAST(p.dt_proposta AS DATE) >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE))
+    CASE WHEN p.dt_validade IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_validade, 'dd/MM/yyyy HH:mm:ss') END AS dt_validade,
 
-    /* FILTRO PDVs */
-    AND p.cd_ponto_venda IN (
-        '000257',
-        '000394',
-        '000400',
-        '000407',
-        '000459',
-        '000405'
-    )
+    CASE WHEN p.dt_ultima_modificacao IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_ultima_modificacao, 'dd/MM/yyyy HH:mm:ss') END AS dt_ultima_modificacao,
 
-    /* EVITAR REPETIÇÃO */
-    AND NOT EXISTS (
-        SELECT 1
-        FROM tb_nova_propostas_historico AS h
-        WHERE p.id_proposta = h.id_proposta
-    )
+    CASE WHEN p.dt_venda IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_venda, 'dd/MM/yyyy HH:mm:ss') END AS dt_venda,
 
+    COALESCE(p.cd_ponto_venda, 'Vazio') AS cd_ponto_venda,
+    COALESCE(p.vendedor, 'Vazio') AS vendedor,
+    COALESCE(p.status_proposta, 'Vazio') AS status_proposta,
+    COALESCE(CAST(p.valor_proposta AS VARCHAR(50)), 'Vazio') AS valor_proposta,
+    COALESCE(p.cd_promocional, 'Vazio') AS cd_promocional,
 
+    /* 1/0 -> Sim / Não */
+    CASE WHEN p.tem_seguro = '1' THEN 'Sim'
+         WHEN p.tem_seguro = '0' THEN 'Não'
+         ELSE 'Vazio' END AS tem_seguro,
 
+    COALESCE(p.tipo_pagamento, 'Vazio') AS tipo_pagamento,
+
+    CASE WHEN p.dt_pagamento IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_pagamento, 'dd/MM/yyyy HH:mm:ss') END AS dt_pagamento,
+
+    COALESCE(p.link_boleto, 'Vazio') AS link_boleto,
+    COALESCE(p.link_cartao, 'Vazio') AS link_cartao,
+    COALESCE(p.link_contrato_naoassinado, 'Vazio') AS link_contrato_naoassinado,
+    COALESCE(p.cd_pix, 'Vazio') AS cd_pix,
+    COALESCE(p.end_point, 'Vazio') AS end_point,
+    COALESCE(p.tipo_bem, 'Vazio') AS tipo_bem,
+    COALESCE(p.ponto_venda, 'Vazio') AS ponto_venda,
+    COALESCE(p.tipo_lance, 'Vazio') AS tipo_lance,
+    COALESCE(p.primeiro_nome, 'Vazio') AS primeiro_nome,
+    COALESCE(p.cd_pix_unificado, 'Vazio') AS cd_pix_unificado,
+    COALESCE(CAST(p.valor_pix_unificado AS VARCHAR(50)), 'Vazio') AS valor_pix_unificado,
+
+    CASE WHEN p.debito_automatico = '1' THEN 'Sim'
+         WHEN p.debito_automatico = '0' THEN 'Não'
+         ELSE 'Vazio' END AS debito_automatico,
+
+    CASE WHEN p.dt_adesao IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_adesao, 'dd/MM/yyyy HH:mm:ss') END AS dt_adesao,
+
+    CASE WHEN p.dt_alocacao IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_alocacao, 'dd/MM/yyyy HH:mm:ss') END AS dt_alocacao,
+
+    COALESCE(p.link_contrato_assinado, 'Vazio') AS link_contrato_assinado,
+
+    CASE WHEN p.uber_retencao = '1' THEN 'Sim'
+         WHEN p.uber_retencao = '0' THEN 'Não'
+         ELSE 'Vazio' END AS uber_retencao,
+
+    CASE WHEN p.dt_contemplacao IS NULL THEN 'Vazio'
+         ELSE FORMAT(p.dt_contemplacao, 'dd/MM/yyyy HH:mm:ss') END AS dt_contemplacao,
+
+    CASE WHEN p.acesso_aplicativo = '1' THEN 'Sim'
+         WHEN p.acesso_aplicativo = '0' THEN 'Não'
+         ELSE 'Vazio' END AS acesso_aplicativo,
+
+    COALESCE(p.cli_information, 'Vazio') AS cli_information,
+
+    CASE WHEN p.api_uber = '1' THEN 'Sim'
+         WHEN p.api_uber = '0' THEN 'Não'
+         ELSE 'Vazio' END AS api_uber,
+
+    COALESCE(CAST(p.cd_cota AS VARCHAR(50)), 'Vazio') AS cd_cota,
+    COALESCE(p.cd_grupo, 'Vazio') AS cd_grupo,
+
+    CASE WHEN p.contrato_assinado = 1 THEN 'Assinado'
+         ELSE 'Não assinado' END AS contrato_assinado,
+
+    CASE WHEN p.proposta_paga = 1 THEN 'Pago'
+         ELSE 'Não pago' END AS proposta_paga,
+
+    /* DATA DE INGESTÃO */
+    GETDATE() AS dt_ingestao
+
+FROM tb_propostas p
+WHERE p.id_proposta IS NOT NULL
