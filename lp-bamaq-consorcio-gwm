@@ -4,7 +4,7 @@
    DE: de_lp_consorcio_automotivo_premium_leads
 =================================================== */
 
-VAR @nome, @telefone, @email, @concessionaria, @optin,
+VAR @nome, @telefone, @email, @optin,
     @empresa, @media, @tipo_evento, @syonet, @rows,
     @campaign_source, @campaign_medium, @campaign_name, @campaign_term, @campaign_content,
     @origem, @funil, @grupo_evento
@@ -13,7 +13,6 @@ VAR @nome, @telefone, @email, @concessionaria, @optin,
 SET @nome           = RequestParameter("nome")
 SET @telefone       = RequestParameter("telefone")
 SET @email          = RequestParameter("email")
-SET @concessionaria = RequestParameter("centro")
 SET @optin          = IIF(EMPTY(RequestParameter("optin")), 0, 1)
 
 /* CAPTURA PARÂMETROS DE CAMPANHA DA URL */
@@ -43,7 +42,6 @@ IF NOT EMPTY(@email) THEN
       "email", @email,
       "nome", @nome,
       "telefone", @telefone,
-      "concessionaria", @concessionaria,
       "empresa", @empresa,
       "media", @media,
       "tipo_evento", @tipo_evento,
@@ -59,7 +57,7 @@ IF NOT EMPTY(@email) THEN
       "funil", @funil,
       "grupo_evento", @grupo_evento,
       "consultor_de_vendas", "",  /* Campo não está no formulário → envia vazio */
-      "interesse", ""             /* Campo não está no formulário → envia vazio */
+      "interesse", ""              /* Campo não está no formulário → envia vazio */
     )
 
   ELSE
@@ -69,7 +67,6 @@ IF NOT EMPTY(@email) THEN
       "email", @email,
       "nome", @nome,
       "telefone", @telefone,
-      "concessionaria", @concessionaria,
       "empresa", @empresa,
       "media", @media,
       "tipo_evento", @tipo_evento,
@@ -157,7 +154,8 @@ ENDIF
       <label>Celular*</label>
       <input type="tel" name="telefone" required placeholder="+55 (11) 91234-5678">
 
-      <label>Concessionária GWM*</label>
+      <!-- CAMPO CENTRO/CONCESSIONARIA - NÃO É SALVO NA DE, APENAS USADO NO FORMULÁRIO -->
+      <label>Empresa/Concessionária*</label>
       <select name="centro" required>
         <option value="">Selecione</option>
         <option>Bamaq GWM Campo Grande</option>
@@ -186,234 +184,6 @@ ENDIF
     </form>
   </div>
 </div>
-
-<!-- ==========  H6  ========== -->
-<section class="cp-section" style="background-image:url(https://d335luupugsy2.cloudfront.net/cms/files/29785/1750080785/$xovdafua56), linear-gradient(to bottom,rgba(74,144,226,0) 0%,rgba(74,144,226,0) 100%);background-size:cover;background-position:center;">
-  <div class="cp-row">
-    <div class="cp-col" style="flex:6 0 0;"></div>
-    <div class="cp-col" style="flex:6 0 0;">
-      <div style="padding:30px;">
-        <div class="cp-box" style="background:#0238f4;">
-          <p style="text-align:center;color:#fff;">Conforto inteligente em cada curva. O H6 combina tecnologia de ponta com dirigibilidade suave.</p>
-          <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/eca3a334-405e-410f-aef5-6381feac3a41.png" alt="H6 Carro" style="max-width:100%;height:auto;">
-          <div style="text-align:center;margin-top:30px;">
-            <a href="#gwm-consorcio-form" class="cp-btn" style="background:#fff;color:#0238f4;">Compre já</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ==========  ORA  ========== -->
-<section class="cp-section" style="background-image:url(https://d335luupugsy2.cloudfront.net/cms/files/29785/1750080785/$0bfjvz1wekru), linear-gradient(to bottom,rgba(74,144,226,0) 0%,rgba(74,144,226,0) 100%);background-size:cover;background-position:center;">
-  <div class="cp-row">
-    <div class="cp-col" style="flex:6 0 0;">
-      <div style="padding:30px;">
-        <div class="cp-box" style="background:#a8a8b5;">
-          <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/52907476-7e03-4d70-8040-91dd7cb4e966.png" alt="ORA" style="max-width:200px;height:auto;display:block;margin:0 auto 10px;">
-          <p style="text-align:center;">Estilo urbano com pegada futurista. Dirigir o ORA é como viver o amanhã hoje.</p>
-          <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/423d0972-e3c5-4f97-9ac2-43b708c9cc5b.png" alt="ORA Carro" style="max-width:100%;height:auto;">
-          <div style="text-align:center;margin-top:30px;">
-            <a href="#gwm-consorcio-form" class="cp-btn" style="background:#000;color:#fff;">Compre já</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="cp-col" style="flex:6 0 0;"></div>
-  </div>
-</section>
-
-<!-- ==========  TANK  ========== -->
-<section class="cp-section" style="background-image:url(https://d335luupugsy2.cloudfront.net/cms/files/29785/1749845239/$w4w8o03aam), linear-gradient(to bottom,rgba(74,144,226,0) 0%,rgba(74,144,226,0) 100%);background-size:cover;background-position:center;">
-  <div class="cp-row">
-    <div class="cp-col" style="flex:6 0 0;"></div>
-    <div class="cp-col" style="flex:6 0 0;">
-      <div style="padding:30px;">
-        <div class="cp-box" style="background:#a7441e;">
-          <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/7e72be50-ceaa-4d33-a8fd-2642eb64c8e4.png" alt="TANK" style="max-width:200px;height:auto;display:block;margin:0 auto 10px;">
-          <p style="text-align:center;color:#fff;">Imponente e destemido, o Tank 300 entrega força bruta com luxo em cada detalhe.</p>
-          <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/6f681b9e-8384-4ad6-b9c4-2a6f6854370c.png" alt="TANK Carro" style="max-width:100%;height:auto;">
-          <div style="text-align:center;margin-top:30px;">
-            <a href="#gwm-consorcio-form" class="cp-btn" style="background:#000;color:#fff;">Compre já</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- DIFERENCIAIS -->
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;">
-  <tr>
-    <td align="center" style="padding:40px 0;">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-        <tr>
-          <td colspan="3" style="text-align:center;padding-bottom:30px;">
-            <h2 style="margin:0;font-size:32px!important;color:#000;">DIFERENCIAIS DO CONSÓRCIO PREMIUM EXPERIENCE</h2>
-          </td>
-        </tr>
-        <tr>
-          <td width="200" style="text-align:center;padding:10px;">
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/cd8102f9-a89c-48b6-99bd-e1acf4c5e4c0.png" width="75" style="display:block;margin:0 auto 10px;">
-            <strong style="font-size:16px!important">Parcelas reduzidas até a contemplação.</strong><br>
-            <span style="font-size:14px!important">Mais respiro para seus pagamentos.</span>
-          </td>
-          <td width="200" style="text-align:center;padding:10px;">
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/125a3719-1037-419f-95f2-3c275b634d11.png" width="80" style="display:block;margin:0 auto 10px;">
-            <strong style="font-size:16px!important">Utilize o valor do carro</strong><br>
-            <span style="font-size:14px!important">atual como lance</span>
-          </td>
-          <td width="200" style="text-align:center;padding:10px;">
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/352c2aa9-248a-4382-a5b0-0ff724bea3ba.png" width="80" style="display:block;margin:0 auto 10px;">
-            <strong style="font-size:16px!important">Consultoria especializada.</strong><br>
-            <span style="font-size:14px!important">De ponta a ponta.</span>
-          </td>
-        </tr>
-        <tr>
-          <td width="200" style="text-align:center;padding:10px;">
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/1f50d211-3b48-4d33-a28c-49e5d6c26575.png" width="80" style="display:block;margin:0 auto 10px;">
-            <strong style="font-size:16px!important">Potencialize suas chances.</strong><br>
-            <span style="font-size:14px!important">prefixado em 3%</span>
-          </td>
-          <td width="200" style="text-align:center;padding:10px;">
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/999b6868-1338-4dff-8f95-9ca59dbca5d2.png" width="80" style="display:block;margin:0 auto 10px;">
-            <strong style="font-size:16px!important">Sem descapitalizar.</strong><br>
-            <span style="font-size:14px!important">Garanta liquidez para emergências</span>
-          </td>
-          <td width="200" style="text-align:center;padding:10px;">
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/ca6a6b89-6969-46b5-b86b-a799bca781e6.png" width="80" style="display:block;margin:0 auto 10px;">
-            <strong style="font-size:16px!important">Bônus para seguro CGF Auto Premium.</strong><br>
-            <span style="font-size:14px!important">Obtenha proteção completa.</span>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3" style="text-align:center;padding-top:30px;">
-            <a href="https://wa.me/5511999999999?text=Ol%C3%A1,%20quero%20falar%20com%20um%20consultor%20Premium%20Experience." style="display:inline-block;background:#d5001c;color:#fff;padding:14px 30px;font-size:18px;text-decoration:none;">Garantir Benefícios</a>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-
-<!-- LOJAS AUTORIZADAS -->
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
-  <tr>
-    <td align="center" style="padding:30px;">
-      <h2 style="margin:0;font-size:30px;color:#0238f4;">Somos autorizados GWM</h2>
-      <p style="margin:10px 0 0;font-size:16px;line-height:1.5;max-width:600px;">
-        O <strong>Grupo Bamaq</strong> é concessionário GWM. Conte com a excelência e exclusividade da marca alinhado com atendimento especializado e serviços de confiança.
-      </p>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" style="padding:20px 0;">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-        
-        <!-- Linha 1: Contagem | Dourados -->
-        <tr>
-          <td width="50%" valign="top" align="center" style="padding:15px;">
-            <h3 style="margin:0 0 10px;font-size:18px;color:#0238f4;">GWM Contagem</h3>
-            <p style="margin:0 0 10px;font-size:14px;">Av. Babita Camargos, 1295 Shopping do Avião - Contagem-MG</p>
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/e1a34cca-447a-47fc-a860-51118469518f.png" alt="Loja Contagem" style="width:100%;max-width:250px;border-radius:10px;display:block;margin:10px auto;">
-            <a href="#gwm-consorcio-form" style="background:#0238f4;color:#fff;padding:10px 20px;text-decoration:none;border-radius:8px;display:inline-block;">Entrar em contato</a>
-          </td>
-          <td width="50%" valign="top" align="center" style="padding:15px;">
-            <h3 style="margin:0 0 10px;font-size:18px;color:#0238f4;">GWM Dourados</h3>
-            <p style="margin:0 0 10px;font-size:14px;">Av. Marcelino Pires, 7530<br>Jardim Márcia - Dourados-MS</p>
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/1cf861f6-f560-4aab-a8d2-517d76897177.png" alt="Loja Dourados" style="width:100%;max-width:250px;border-radius:10px;display:block;margin:10px auto;">
-            <a href="#gwm-consorcio-form" style="background:#0238f4;color:#fff;padding:10px 20px;text-decoration:none;border-radius:8px;display:inline-block;">Entrar em contato</a>
-          </td>
-        </tr>
-
-        <!-- Linha 2: Campo Grande | Raja -->
-        <tr>
-          <td width="50%" valign="top" align="center" style="padding:15px;">
-            <h3 style="margin:0 0 10px;font-size:18px;color:#0238f4;">GWM Campo Grande</h3>
-            <p style="margin:0 0 10px;font-size:14px;">Rua Joaquim Murtinho, 2097<br>Itanhangá Park - Campo Grande-MS</p>
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/4e3614e8-f6ec-47bd-9b64-f95c8d536c99.png" alt="Loja Campo Grande" style="width:100%;max-width:250px;border-radius:10px;display:block;margin:10px auto;">
-            <a href="#gwm-consorcio-form" style="background:#0238f4;color:#fff;padding:10px 20px;text-decoration:none;border-radius:8px;display:inline-block;">Entrar em contato</a>
-          </td>
-          <td width="50%" valign="top" align="center" style="padding:15px;">
-            <h3 style="margin:0 0 10px;font-size:18px;color:#0238f4;">GWM Belo Horizonte - Raja</h3>
-            <p style="margin:0 0 10px;font-size:14px;">Av. Raja Gabaglia, 3700<br>Estoril - Belo Horizonte-MG</p>
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/bae79fa1-49a9-459e-b693-c2fb314abd32.png" alt="Loja Raja" style="width:100%;max-width:250px;border-radius:10px;display:block;margin:10px auto;">
-            <a href="#gwm-consorcio-form" style="background:#0238f4;color:#fff;padding:10px 20px;text-decoration:none;border-radius:8px;display:inline-block;">Entrar em contato</a>
-          </td>
-        </tr>
-
-        <!-- Linha 3: Pampulha -->
-        <tr>
-          <td colspan="2" align="center" style="padding:15px;">
-            <h3 style="margin:0 0 10px;font-size:18px;color:#0238f4;">GWM Pampulha</h3>
-            <p style="margin:0 0 10px;font-size:14px;">Av. Antônio Carlos, 6250 - Loja 1<br>Pampulha - Belo Horizonte-MG</p>
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/699cf556-bb63-4c20-9515-37452b3febef.png" alt="Loja Pampulha" style="width:100%;max-width:250px;border-radius:10px;display:block;margin:10px auto;">
-            <a href="#gwm-consorcio-form" style="background:#0238f4;color:#fff;padding:10px 20px;text-decoration:none;border-radius:8px;display:inline-block;">Entrar em contato</a>
-          </td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-
-<!-- RODAPÉ -->
-<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#000000" style="background-color:#000000;">
-  <tr>
-    <td align="center" style="padding:20px;">
-      
-      <!-- TÍTULO -->
-      <table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="max-width:600px;">
-        <tr>
-          <td align="center" style="font-family:Arial, Helvetica, sans-serif; font-size:44px; line-height:1.25; color:#ffffff; font-weight:bold;">
-            Credibilidade<br>e segurança
-          </td>
-        </tr>
-      </table>
-
-      <!-- TEXTO -->
-      <table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="max-width:600px; margin-top:20px;">
-        <tr>
-          <td align="center" style="font-family:Arial, Helvetica, sans-serif; font-size:17px; line-height:1.25; color:#ffffff;">
-            A Bamaq Consórcio faz parte de um grupo empresarial de mais de meio século. Tanta experiência contribui para a realização dos planos de milhares de pessoas e empresas em todo Brasil. Com a gente, sua experiência é levada a sério.
-          </td>
-        </tr>
-      </table>
-
-      <!-- BOTÃO -->
-      <table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin:30px auto;">
-        <tr>
-          <td bgcolor="#ffffff" align="center" style="border-radius:5px;">
-            <a href="#gwm-consorcio-form" target="_blank" style="display:inline-block; font-family:Arial, Helvetica, sans-serif; font-size:22px; color:#000000; text-decoration:none; padding:15px 30px; border-radius:5px;">
-              Solicitar consultoria
-            </a>
-          </td>
-        </tr>
-      </table>
-
-      <!-- IMAGEM -->
-      <table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="max-width:887px; margin:20px auto;">
-        <tr>
-          <td align="center">
-            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/81017a62-8f21-4182-b799-ff7fa0f1eebd.png" alt="" width="100%" style="max-width:887px; height:auto; border:0; display:block;">
-          </td>
-        </tr>
-      </table>
-
-      <!-- LEGAL -->
-      <table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="max-width:600px; margin:20px auto;">
-        <tr>
-          <td align="center" style="font-family:Arial, Helvetica, sans-serif; font-size:10px; line-height:1.25; color:#ffffff;">
-            A Bamaq Administradora de Consórcios LTDA., CNPJ: 71.045.363/0001-91, uma Administradora de Consórcios, fiscalizada e autorizada pelo Banco Central do Brasil. 
-            Saiba mais em <a href="https://grupobamaq.com.br" target="_blank" style="color:#ffffff; text-decoration:underline;">grupobamaq.com.br</a>
-          </td>
-        </tr>
-      </table>
-
-    </td>
-  </tr>
-</table>
 
 </body>
 </html>
