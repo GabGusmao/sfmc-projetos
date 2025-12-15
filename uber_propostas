@@ -1,0 +1,43 @@
+SELECT
+    api.contato,
+    api.contato_normalizado,
+    api.tipo_contato,
+    ISNULL(CAST(api.status AS VARCHAR(200)), 'SEM_STATUS') AS status,
+    api.ip,
+    api.data_criacao,
+
+    p.id_proposta,
+    p.nome_completo,
+    p.email,
+    p.celular,
+    p.status_proposta,
+    p.dt_proposta,
+    p.cd_pix,
+
+    /* CONTRATO ASSINADO - vindo da tb_propostas */
+    CASE 
+        WHEN p.cd_pix IS NOT NULL AND p.cd_pix <> '' THEN 1 
+        ELSE 0 
+    END AS contrato_assinado,
+    
+    /* PROPOSTA PAGA - vindo da tb_propostas */
+    CASE 
+        WHEN p.dt_pagamento IS NOT NULL THEN 1 
+        ELSE 0 
+    END AS proposta_paga,
+
+    GETDATE() AS data_Entrada,
+    'br' AS Locale
+
+FROM tb_api_uber api
+
+LEFT JOIN tb_propostas p
+   ON (
+        (api.tipo_contato = 'email'   AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.email)))
+        OR
+        (api.tipo_contato = 'celular' AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.celular)))
+      )
+
+WHERE
+   api.data_criacao >= CONVERT(DATE, GETDATE())
+   AND api.data_criacao <  DATEADD(DAY, 1, CONVERT(DATE, GETDATE()))
