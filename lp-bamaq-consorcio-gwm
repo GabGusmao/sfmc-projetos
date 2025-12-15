@@ -5,8 +5,9 @@
 =================================================== */
 
 VAR @nome, @telefone, @email, @concessionaria, @optin,
-    @empresa, @media, @tipoEvento, @syonet, @rows,
-    @campaign_source, @campaign_medium, @campaign_name, @campaign_term, @campaign_content
+    @empresa, @media, @tipo_evento, @syonet, @rows,
+    @campaign_source, @campaign_medium, @campaign_name, @campaign_term, @campaign_content,
+    @origem, @funil
 
 /* Captura dados do formulário */
 SET @nome           = RequestParameter("nome")
@@ -22,11 +23,13 @@ SET @campaign_name     = RequestParameter("utm_campaign")
 SET @campaign_term     = RequestParameter("utm_term")
 SET @campaign_content  = RequestParameter("utm_content")
 
-/* Campos técnicos fixos */
+/* Campos fixos */
 SET @empresa    = "01 - BAMAQ CONTAGEM"
 SET @media      = "INTERNET"
-SET @tipoEvento = "OPORTUNIDADE"
+SET @tipo_evento = "OPORTUNIDADE"
 SET @syonet     = "false"
+SET @origem     = "Landing Page"
+SET @funil      = "Funil Consórcio"
 
 IF NOT EMPTY(@email) THEN
 
@@ -42,7 +45,7 @@ IF NOT EMPTY(@email) THEN
       "concessionaria", @concessionaria,
       "empresa", @empresa,
       "media", @media,
-      "TipoEvento", @tipoEvento,
+      "tipo_evento", @tipo_evento,
       "Syonet_Sent", @syonet,
       "optin", @optin,
       "DataHora", NOW(),
@@ -50,7 +53,11 @@ IF NOT EMPTY(@email) THEN
       "campaign_medium", @campaign_medium,
       "campaign_name", @campaign_name,
       "campaign_term", @campaign_term,
-      "campaign_content", @campaign_content
+      "campaign_content", @campaign_content,
+      "origem", @origem,
+      "funil", @funil,
+      "consultor_de_vendas", "",  /* Campo não está no formulário → envia vazio */
+      "interesse", ""              /* Campo não está no formulário → envia vazio */
     )
 
   ELSE
@@ -63,7 +70,7 @@ IF NOT EMPTY(@email) THEN
       "concessionaria", @concessionaria,
       "empresa", @empresa,
       "media", @media,
-      "TipoEvento", @tipoEvento,
+      "tipo_evento", @tipo_evento,
       "Syonet_Sent", @syonet,
       "optin", @optin,
       "DataHora", NOW(),
@@ -71,7 +78,11 @@ IF NOT EMPTY(@email) THEN
       "campaign_medium", @campaign_medium,
       "campaign_name", @campaign_name,
       "campaign_term", @campaign_term,
-      "campaign_content", @campaign_content
+      "campaign_content", @campaign_content,
+      "origem", @origem,
+      "funil", @funil,
+      "consultor_de_vendas", "",  /* Campo não está no formulário → envia vazio */
+      "interesse", ""              /* Campo não está no formulário → envia vazio */
     )
 
   ENDIF
@@ -98,10 +109,11 @@ ENDIF
     .left h1{color:#0238f4;font-size:43px;font-family:Roboto,Arial,Helvetica,sans-serif;margin:20px 0;line-height:1.25}
     .right form{background:#0238f4;border-radius:20px;padding:30px;color:#fff}
     .right form h2{font-size:20px;text-align:center;margin-bottom:20px;line-height:1.25}
-    .right form label{font-size:14px;margin-bottom:6px;display:block}
+    .right form label{font-size:14px;margin-bottom:6px;display:block;text-align:left}
     .right form input,.right form select{width:100%;padding:10px;margin-bottom:15px;border:none;border-radius:4px;font-size:16px}
-    .right form .optin{font-size:12px;display:flex;align-items:flex-start}
-    .right form .optin input{margin-right:6px;margin-top:2px}
+    .right form .optin{font-size:12px;display:flex;align-items:flex-start;margin-bottom:15px;text-align:left;width:100%;gap:8px}
+    .right form .optin input{margin:3px 0 0 0;flex-shrink:0;width:16px;height:16px}
+    .right form .optin label{flex:1;margin:0;font-size:12px}
     .right form .optin a{color:#fff;text-decoration:underline}
     .right form button{width:100%;max-width:325px;margin:15px auto 0;display:block;background:#fff;color:#000;font-size:22px;border:none;border-radius:5px;height:65px;cursor:pointer}
     .cp-section{background-size:cover;background-position:center}
@@ -151,9 +163,13 @@ ENDIF
         <option>Bamaq GWM Raja Gabaglia</option>
       </select>
 
+      <!-- CAIXA DE OPTIN NÃO OBRIGATÓRIA E ALINHADA -->
       <div class="optin">
-        <input type="checkbox" name="optin" required>
-        <span>Eu concordo em receber comunicações. Ao informar meus dados, eu concordo com a <a href="https://www.bamaqconsorcio.com.br/politica-de-privacidade-e-seguranca-de-dados" target="_blank">Política de Privacidade</a>.</span>
+        <input type="checkbox" id="optin" name="optin">
+        <label for="optin">
+          Eu concordo em receber comunicações. Ao informar meus dados, eu concordo com a 
+          <a href="https://www.bamaqconsorcio.com.br/politica-de-privacidade-e-seguranca-de-dados" target="_blank">Política de Privacidade</a>.
+        </label>
       </div>
 
       <!-- CAMPOS HIDDEN PARA PARÂMETROS DE CAMPANHA -->
