@@ -7,7 +7,7 @@
 VAR @nome, @telefone, @email, @concessionaria, @optin,
     @empresa, @media, @tipo_evento, @syonet, @rows,
     @campaign_source, @campaign_medium, @campaign_name, @campaign_term, @campaign_content,
-    @origem, @funil
+    @origem, @funil, @grupo_evento
 
 /* Captura dados do formulário */
 SET @nome           = RequestParameter("nome")
@@ -24,12 +24,13 @@ SET @campaign_term     = RequestParameter("utm_term")
 SET @campaign_content  = RequestParameter("utm_content")
 
 /* Campos fixos */
-SET @empresa    = "01 - BAMAQ CONTAGEM"
-SET @media      = "INTERNET"
-SET @tipo_evento = "OPORTUNIDADE"
-SET @syonet     = "false"
-SET @origem     = "Landing Page"
-SET @funil      = "Funil Consórcio"
+SET @empresa      = "01 - BAMAQ CONTAGEM"
+SET @media        = "INTERNET"
+SET @tipo_evento  = "OPORTUNIDADE"
+SET @syonet       = "false"
+SET @origem       = "Landing Page"
+SET @funil        = "Funil Consórcio"
+SET @grupo_evento = "OPORTUNID"
 
 IF NOT EMPTY(@email) THEN
 
@@ -56,8 +57,9 @@ IF NOT EMPTY(@email) THEN
       "campaign_content", @campaign_content,
       "origem", @origem,
       "funil", @funil,
+      "grupo_evento", @grupo_evento,
       "consultor_de_vendas", "",  /* Campo não está no formulário → envia vazio */
-      "interesse", ""              /* Campo não está no formulário → envia vazio */
+      "interesse", ""             /* Campo não está no formulário → envia vazio */
     )
 
   ELSE
@@ -81,6 +83,7 @@ IF NOT EMPTY(@email) THEN
       "campaign_content", @campaign_content,
       "origem", @origem,
       "funil", @funil,
+      "grupo_evento", @grupo_evento,
       "consultor_de_vendas", "",  /* Campo não está no formulário → envia vazio */
       "interesse", ""              /* Campo não está no formulário → envia vazio */
     )
