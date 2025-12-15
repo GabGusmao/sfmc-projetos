@@ -1,9 +1,12 @@
 SELECT
-    /* CAMPOS DA TB_PROPOSTAS (p) */
+    /* ===============================
+       DADOS DA PROPOSTA (FONTE DA DATA)
+       =============================== */
     p.id_proposta,
     p.id_produto,
     p.cnpj_cpf,
     p.nome_completo,
+    p.primeiro_nome,
     p.email,
     p.celular,
     p.dt_proposta,
@@ -24,38 +27,36 @@ SELECT
     p.link_contrato_naoassinado,
     p.cd_pix,
     p.end_point,
-    p.tipo_bem AS tipo_bem_proposta,
-    p.ponto_venda AS ponto_venda_proposta,
+    p.tipo_bem        AS tipo_bem_proposta,
+    p.ponto_venda     AS ponto_venda_proposta,
     p.tipo_lance,
-    p.primeiro_nome,
-    p.cd_pix_unificado AS cd_pix_unificado_proposta,
+    p.cd_pix_unificado,
     p.valor_pix_unificado,
     p.debito_automatico,
     p.dt_adesao,
-    p.dt_alocacao AS dt_alocacao_proposta,
+    p.dt_alocacao     AS dt_alocacao_proposta,
     p.link_contrato_assinado,
     p.uber_retencao,
     p.dt_contemplacao AS dt_contemplacao_proposta,
     p.acesso_aplicativo,
     p.cli_information,
     p.api_uber,
-    p.cd_cota AS cd_cota_proposta,
-    p.cd_grupo AS cd_grupo_proposta,
+    p.cd_cota         AS cd_cota_proposta,
+    p.cd_grupo        AS cd_grupo_proposta,
     p.contrato_assinado,
     p.proposta_paga,
 
-    /* CAMPOS DA TB_POS_VENDAS (pv) */
-    pv.ponto_venda AS ponto_venda_posvenda,
-    pv.cd_grupo AS cd_grupo_posvenda,
-    pv.cd_cota AS cd_cota_posvenda,
-    pv.data_alocacao AS data_alocacao_posvenda,
+    /* ===============================
+       DADOS DE PÓS-VENDA
+       =============================== */
+    pv.ponto_venda    AS ponto_venda_posvenda,
+    pv.cd_grupo       AS cd_grupo_posvenda,
+    pv.cd_cota        AS cd_cota_posvenda,
+    pv.data_alocacao  AS data_alocacao_posvenda,
     pv.valor_bem,
-    pv.tipo_bem AS tipo_bem_posvenda,
+    pv.tipo_bem       AS tipo_bem_posvenda,
     pv.data_cadastro_orb,
-
-    /* CAMPO CONVERTIDO US → BR */
-    CONVERT(VARCHAR(10), pv.data_proxima_assembleia, 103) AS data_proxima_assembleia_BR,
-
+    pv.data_proxima_assembleia,
     pv.forma_pagamento AS forma_pagamento_posvenda,
     pv.situacao_contrato,
     pv.data_contemplacao AS dt_contemplacao_posvenda,
@@ -73,10 +74,31 @@ SELECT
     pv.data_pagamento,
     pv.cd_pix_unificado AS cd_pix_unificado_posvenda,
     pv.enviar_boas_vindas,
-    pv.id_pessoa
+    pv.id_pessoa,
+
+    /* ===============================
+       FLAGS DE CONTROLE (JORNADA)
+       =============================== */
+    CASE
+        WHEN p.dt_alocacao IS NOT NULL THEN 1
+        ELSE 0
+    END AS cota_alocada,
+
+    CASE
+        WHEN pv.data_cadastro_orb IS NOT NULL THEN 1
+        ELSE 0
+    END AS app_liberado
 
 FROM tb_propostas p
-INNER JOIN tb_pos_vendas pv
-        ON p.id_proposta = pv.id_proposta
+LEFT JOIN tb_pos_vendas pv
+       ON p.id_proposta = pv.id_proposta
 
-WHERE pv.data_alocacao IS NOT NULL
+/* ===============================
+   ENTRADA DA JORNADA:
+   SOMENTE ALOCAÇÃO DE ONTEM E HOJE
+   (BASE = TB_PROPOSTAS)
+   =============================== */
+WHERE p.dt_alocacao IS NOT NULL
+  AND CAST(p.dt_alocacao AS DATE)
+      BETWEEN CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
+          AND CAST(GETDATE() AS DATE)
