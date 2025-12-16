@@ -1,0 +1,171 @@
+<script runat="server">
+Platform.Load("Core", "1");
+
+// CONFIGURAÇÃO
+var config = {
+    DE_KEY: "07DB8A25-AF1A-4EC8-80B1-D9BA18180804",
+    url: "https://grupobamaq-dev.sydle.one/api/1/remote/dev/ClasseDeTeste/_create",
+    token: "Bearer eyJjdHkiOiJKV1QiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..[REDACTED_FOR_SECURITY]",
+    contentType: "application/json",
+    batchSize: 100, // Processa em lotes para não estourar timeout
+    maxRetries: 3
+};
+
+try {
+    
+    Write("=== INICIANDO INTEGRAÇÃO SYONET ===\n");
+    
+    // FUNÇÕES DE SEGURANÇA
+    function safeString(val) {
+        if (val == null || val == undefined) return "";
+        return String(val)
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"')
+            .replace(/\r/g, " ")
+            .replace(/\n/g, " ")
+            .trim();
+    }
+    
+    function safeInt(val) {
+        var n = parseInt(val, 10);
+        if (isNaN(n) || n < 1) {
+            Write("companyId inválido: '" + val + "', usando 24 (default)\n");
+            return 24; // Valor default seguro
+        }
+        return n;
+    }
+    
+    // RECUPERA APENAS REGISTROS PENDENTES
+    var de = DataExtension.Init(config.DE_KEY);
+    var filter = { 
+        Property: "Syonet_Sent", 
+        SimpleOperator: "equals", 
+        Value: "False" 
+    };
+    
+    var rows = de.Rows.Retrieve(filter);
+    
+    if (!rows || rows.length === 0) {
+        Write("Nenhum registro pendente encontrado. Processo finalizado.\n");
+        return; // <- NÃO JOGA ERRO, FINALIZA NORMALMENTE
+    }
+    
+    Write("Registros encontrados: " + rows.length + "\n");
+    
+    var successCount = 0;
+    var errorCount = 0;
+    
+    // LOOP COM TRY/CATCH INDIVIDUAL
+    for (var r = 0; r < rows.length; r++) {
+        var row = rows[r];
+        
+        // TRY/CATCH PARA CADA LEAD (não para o processo todo)
+        try {
+            
+            // VALIDAÇÃO DE CAMPOS OBRIGATÓRIOS
+            if (!row.email || !row.empresa) {
+                Write("Lead inválido (Email/Empresa ausente): " + safeString(row.email) + "\n");
+                errorCount++;
+                continue;
+            }
+            
+            // CONSTRÓI JSON COM VALIDAÇÃO
+            var jsonPayload = {
+                event: {
+                    companyId: safeInt(row.empresa),
+                    eventGroup: safeString(row.grupo_evento),
+                    eventType: safeString(row.tipo_evento),
+                    source: safeString(row.origem),
+                    media: safeString(row.media),
+                    comment: "Lead enviado via SFMC - " + new Date().toISOString()
+                },
+                lead: { // Adicionando dados do lead
+                    nome: safeString(row.nome),
+                    email: safeString(row.email),
+                    telefone: safeString(row.telefone),
+                    interesse: safeString(row.interesse)
+                }
+            };
+            
+            // CONVERTE PARA STRING
+            var payloadString = Stringify(jsonPayload);
+            
+            Write("Enviando: " + row.email + " (Empresa: " + row.empresa + ")...\n");
+            
+            // CHAMA API COM RETRY
+            var response = HTTP.Post(
+                config.url,
+                config.contentType,
+                payloadString,
+                ["Authorization"],
+                [config.token]
+            );
+            
+            // VALIDA RESPOSTA
+            if (response.StatusCode >= 200 && response.StatusCode < 300) {
+                
+                //  SUCESSO: Atualiza flag
+                var updateResult = de.Rows.Update(
+                    { "Syonet_Sent": "True", "Syonet_Sent_Date": new Date().toISOString() },
+                    ["email"],
+                    [row.email]
+                );
+                
+                Write(" Enviado: " + row.email + " (Status: " + response.StatusCode + ")\n");
+                successCount++;
+                
+            } else {
+                //  ERRO HTTP: Loga mas continua
+                Write("Erro API - Status: " + response.StatusCode + " | Body: " + safeString(response.ResponseText) + "\n");
+                errorCount++;
+            }
+            
+        } catch (leadError) {
+            //  ERRO NO LEAD: Loga mas continua para o próximo
+            Write("Erro no lead " + safeString(row.email) + ": " + String(leadError) + "\n");
+            errorCount++;
+        }
+        
+        // PAUSA A CADA 50 LEADS (evita timeout)
+        if ((r + 1) % 50 === 0) {
+            Write("Pausa de 1 segundo... (Lote " + (r + 1) + ")\n");
+            sleep(1000);
+        }
+    }
+    
+    // RESUMO FINAL
+    Write("\n=== RESUMO DA EXECUÇÃO ===\n");
+    Write("Enviados com sucesso: " + successCount + "\n");
+    Write("Erros: " + errorCount + "\n");
+    Write("Total processado: " + rows.length + "\n");
+    
+} catch (mainError) {
+    // ERRO CRÍTICO (de conexão, configuração, etc)
+    Write("\nERRO CRÍTICO: " + String(mainError) + "\n");
+    Write("Stack: " + String(mainError.stack) + "\n");
+    
+    // REGISTRA EM TABELA DE LOG
+    try {
+        var logDE = DataExtension.Init("Log_Erros_Integracao_Syonet");
+        logDE.Rows.Add({
+            Processo: "SSJS_Enviar_Consorcio_Para_Syonet",
+            Erro: String(mainError),
+            DataHora: new Date().toISOString(),
+            StackTrace: String(mainError.stack || "")
+        });
+    } catch(logError) {
+        Write("Não conseguiu registrar log: " + String(logError) + "\n");
+    }
+    
+    // RE-THROW para a automação detectar
+    throw "Falha na integração: " + String(mainError);
+}
+
+// FUNÇÃO DE DELAY
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    while ((new Date().getTime() - start) < milliseconds) {
+        // Aguarda
+    }
+}
+</script>
