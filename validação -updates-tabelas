@@ -1,4 +1,4 @@
 SELECT
 MAX(pv.data_alocacao) AS ultima_data_alocacao
-FROM tb_pos_vendas Ppv
+FROM tb_pos_vendas pv
 WHERE pv.data_alocacao IS NOT NULL
