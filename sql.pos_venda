@@ -179,5 +179,15 @@ FROM (
       AND CAST(pv.data_alocacao AS DATE)
           BETWEEN CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
               AND CAST(GETDATE() AS DATE)
+              
+              /* FILTRO PDVs */
+    AND p.cd_ponto_venda IN (
+        '000257',
+        '000394',
+        '000400',
+        '000407',
+        '000459',
+        '000405'
+    )
 ) base
 WHERE rn = 1
