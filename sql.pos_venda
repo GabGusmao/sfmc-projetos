@@ -1,6 +1,6 @@
 SELECT
     /* ===============================
-       DADOS DA PROPOSTA (FONTE DA DATA)
+       DADOS DA PROPOSTA
        =============================== */
     p.id_proposta,
     p.id_produto,
@@ -34,10 +34,9 @@ SELECT
     p.valor_pix_unificado,
     p.debito_automatico,
     p.dt_adesao,
-    p.dt_alocacao     AS dt_alocacao_proposta,
     p.link_contrato_assinado,
     p.uber_retencao,
-    p.dt_contemplacao AS dt_contemplacao_proposta,
+    p.dt_contemplacao,
     p.acesso_aplicativo,
     p.cli_information,
     p.api_uber,
@@ -52,14 +51,14 @@ SELECT
     pv.ponto_venda    AS ponto_venda_posvenda,
     pv.cd_grupo       AS cd_grupo_posvenda,
     pv.cd_cota        AS cd_cota_posvenda,
-    pv.data_alocacao  AS data_alocacao_posvenda,
+    pv.data_alocacao  AS data_alocacao_jornada,
     pv.valor_bem,
     pv.tipo_bem       AS tipo_bem_posvenda,
     pv.data_cadastro_orb,
     pv.data_proxima_assembleia,
     pv.forma_pagamento AS forma_pagamento_posvenda,
     pv.situacao_contrato,
-    pv.data_contemplacao AS dt_contemplacao_posvenda,
+    pv.data_contemplacao,
     pv.tipo_contemplacao,
     pv.ofertou_lance,
     pv.link_boleto_lance,
@@ -77,10 +76,10 @@ SELECT
     pv.id_pessoa,
 
     /* ===============================
-       FLAGS DE CONTROLE (JORNADA)
+       FLAGS
        =============================== */
     CASE
-        WHEN p.dt_alocacao IS NOT NULL THEN 1
+        WHEN pv.data_alocacao IS NOT NULL THEN 1
         ELSE 0
     END AS cota_alocada,
 
@@ -89,16 +88,20 @@ SELECT
         ELSE 0
     END AS app_liberado
 
-FROM tb_propostas p
-LEFT JOIN tb_pos_vendas pv
-       ON p.id_proposta = pv.id_proposta
-
-/* ===============================
-   ENTRADA DA JORNADA:
-   SOMENTE ALOCAÇÃO DE ONTEM E HOJE
-   (BASE = TB_PROPOSTAS)
-   =============================== */
-WHERE p.dt_alocacao IS NOT NULL
-  AND CAST(p.dt_alocacao AS DATE)
-      BETWEEN CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
-          AND CAST(GETDATE() AS DATE)
+FROM (
+    SELECT
+        p.*,
+        pv.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY p.id_proposta
+            ORDER BY pv.data_alocacao DESC
+        ) AS rn
+    FROM tb_propostas p
+    INNER JOIN tb_pos_vendas pv
+            ON p.id_proposta = pv.id_proposta
+    WHERE pv.data_alocacao IS NOT NULL
+      AND CAST(pv.data_alocacao AS DATE)
+          BETWEEN CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
+              AND CAST(GETDATE() AS DATE)
+) base
+WHERE rn = 1
