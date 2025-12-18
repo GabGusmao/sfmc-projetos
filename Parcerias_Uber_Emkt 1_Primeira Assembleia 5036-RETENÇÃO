@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<custom name="opencounter" type="tracking"/>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BAMAQ</title>
+
+  <style>
+    table { border-collapse: collapse !important; mso-table-lspace:0pt; mso-table-rspace:0pt; }
+    img { display:block; border:0; outline:none; }
+    @media screen and (max-width:600px) {
+      .w100p { width:100% !important; max-width:100% !important; }
+      .w90p { width:90% !important; max-width:90% !important; }
+    }
+  </style>
+</head>
+
+<body style="margin:0; padding:0; background:#ffffff;">
+<custom name="opencounter" type="tracking"/>
+
+<!-- TABELA MÃE -->
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+  <tr>
+    <td align="center" style="padding:0 10px;">
+
+      <!-- CONTAINER 600 -->
+      <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px; background:#ffffff;">
+
+        <!-- Spacer -->
+        <tr><td height="20"></td></tr>
+
+        <!-- Banner -->
+        <tr>
+          <td>
+            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/1d795bdc-1f3f-41dd-9f09-39222dfc08d9.png" width="600" alt="">
+          </td>
+        </tr>
+
+        <tr><td height="20"></td></tr>
+
+        <!-- Título -->
+        <tr>
+          <td style="padding:0 15px; font-family:Arial,sans-serif; font-size:24px; font-weight:bold;">
+            Olá!
+          </td>
+        </tr>
+
+        <!-- Texto -->
+        <tr>
+          <td style="padding:10px 15px; font-family:Arial,sans-serif; font-size:16px;">
+          Temos uma boa notícia! A primeira assembleia do Grupo 5036, exclusivo para motoristas parceiros da Uber, já foi definida.
+          </td>
+        </tr>
+
+     <!-- PILULA DATA E HORA -->
+<tr>
+  <td align="center" style="padding:20px 0;">
+    <table cellpadding="0" cellspacing="0" role="presentation"
+           style="background-color:#000000; border-radius:999px;">
+      <tr>
+
+        <!-- ÍCONE DATA -->
+        <td style="padding:10px 8px 10px 14px;">
+          <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/1376ed3d-a7e3-447c-b8df-b6a91ff2e5cb.png"
+               width="18" height="18" alt="Data"
+               style="display:block;">
+        </td>
+
+        <!-- TEXTO DATA -->
+        <td style="padding:10px 10px;
+                   font-family:Arial,Helvetica,sans-serif;
+                   font-size:13px;
+                   font-weight:bold;
+                   color:#ffffff;
+                   white-space:nowrap;">
+          05 DE JANEIRO
+        </td>
+
+        <!-- DIVISOR -->
+        <td style="padding:0 10px;
+                   color:#ffffff;
+                   font-size:14px;
+                   line-height:1;">
+          |
+        </td>
+
+        <!-- ÍCONE HORA -->
+        <td style="padding:10px 6px;">
+          <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/15c1cf30-84e0-446f-9d0a-4ff46cd43c18.png"
+               width="18" height="18" alt="Hora"
+               style="display:block;">
+        </td>
+
+        <!-- TEXTO HORA -->
+        <td style="padding:10px 14px 10px 6px;
+                   font-family:Arial,Helvetica,sans-serif;
+                   font-size:13px;
+                   font-weight:bold;
+                   color:#ffffff;
+                   white-space:nowrap;">
+          17 HORAS
+        </td>
+
+      </tr>
+    </table>
+  </td>
+</tr>
+<!-- /PILULA -->
+
+
+        <!-- Texto -->
+        <tr>
+          <td style="padding:0 15px; font-family:Arial,sans-serif; font-size:16px;">
+            Para participar basta acessar o link que enviaremos no seu e-mail no dia da assembleia.
+          </td>
+        </tr>
+
+        <tr><td height="20"></td></tr>
+
+       <!-- BOX PRETO -->
+<tr>
+  <td align="center">
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+           style="background:#000000; border-radius:15px;">
+      <tr>
+        <td style="padding:20px;">
+
+          <!-- CONTEÚDO -->
+          <table width="100%" cellpadding="" cellspacing="0" role="presentation">
+            <tr>
+
+              <!-- ÍCONE -->
+              <td width="50" valign="top">
+                <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/35b54c6f-73c8-4543-8ed7-789a9fecb3af.png"
+                     width="50"
+                     alt=""
+                     style="display:block;">
+              </td>
+
+              <!-- TEXTO -->
+              <td valign="top"
+                  style="padding-left:15px;
+                         font-family:Arial,sans-serif;
+                         font-size:14px;
+                         line-height:1.5;
+                         color:#ffffff;">
+
+                <strong>Como participar?</strong><br><br>
+
+                Você optou pela retenção semanal. Para participar da assembleia,
+                é necessário que a primeira parcela seja integralmente paga.<br><br>
+
+                Ou seja, a cada semana ¼ do valor da sua primeira parcela é
+                descontado dos seus ganhos. Ao completar o valor total da parcela
+                via retenção semanal, você já terá acesso ao
+                <a href="https://onelink.to/arp8uv"
+                   target="_blank"
+                   style="color:#FFD400; text-decoration:underline;">
+                  Aplicativo Bamaq Consórcio
+                </a>
+                e poderá fazer toda a gestão da sua cota na palma da mão,
+                participar da assembleia e ofertar lances.
+
+              </td>
+
+            </tr>
+          </table>
+          <!-- /CONTEÚDO -->
+
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+
+        <tr><td height="20"></td></tr>
+
+
+       
+
+        <!-- Despedida -->
+        <tr>
+          <td style="padding:0 15px; font-family:Arial,sans-serif; font-size:16px;">
+            <strong>Boa sorte!</strong><br>
+            Time Bamaq Consórcio & Uber
+          </td>
+        </tr>
+
+        <tr><td height="20"></td></tr>
+
+        <!-- Rodapé -->
+        <tr>
+          <td align="center">
+            <img src="https://image.marketing.bamaqconsorcio.com.br/lib/fe2e11737164057b7c1673/m/1/d854436b-917f-4a0b-86a0-f6c4c428d919.png" width="600" alt="">
+          </td>
+        </tr>
+
+        <tr><td height="20"></td></tr>
+
+        <!-- Legal -->
+        <tr>
+          <td style="text-align:center; font-family:Arial,sans-serif; font-size:14px; color:#555555;">
+            Esse email foi enviado por: %%Member_Busname%%<br>
+            %%Member_Addr%%, %%Member_City%% - %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%.
+            <br><br>
+            <a href="%%unsub_center_url%%" style="color:#555555; text-decoration:none;">Descadastrar</a>
+          </td>
+        </tr>
+
+        <tr><td height="20"></td></tr>
+<tr>
+  <td style="text-align:center; font-family:Arial,sans-serif; font-size:14px; color:#555555;">
+    <a href="%%profile_center_url%%" 
+       style="color:#555555; text-decoration:none;">
+      Atualizar preferências
+    </a>
+    &nbsp;|&nbsp;
+    <a href="%%unsub_center_url%%" 
+       style="color:#555555; text-decoration:none;">
+      Descadastrar
+    </a>
+  </td>
+</tr>
+
+      </table>
+      <!-- /600 -->
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
