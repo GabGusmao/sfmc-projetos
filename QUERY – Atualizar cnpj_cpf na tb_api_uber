@@ -1,11 +1,13 @@
 SELECT
     /* =====================================================
-       CHAVE
+       CAMPOS OBRIGATÓRIOS DA DE
        ===================================================== */
     api.contato_normalizado,
+    api.contato,
+    api.tipo_contato,
 
     /* =====================================================
-       CNPJ / CPF
+       CPF / CNPJ
        ===================================================== */
     ISNULL(p.cnpj_cpf, 'USUARIO_NAO_EXISTE') AS cnpj_cpf
 
