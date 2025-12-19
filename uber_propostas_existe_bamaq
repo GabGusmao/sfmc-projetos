@@ -1,0 +1,29 @@
+SELECT
+    /* =====================================================
+       CHAVE
+       ===================================================== */
+    api.contato_normalizado,
+
+    /* =====================================================
+       CNPJ / CPF
+       ===================================================== */
+    ISNULL(p.cnpj_cpf, 'USUARIO_NAO_EXISTE') AS cnpj_cpf
+
+FROM tb_api_uber api
+
+LEFT JOIN tb_propostas p
+   ON (
+        /* MATCH POR EMAIL */
+        (
+            api.contato_normalizado LIKE '%@%'
+            AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.email))
+        )
+
+        OR
+
+        /* MATCH POR CELULAR */
+        (
+            api.contato_normalizado LIKE '55%'
+            AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.celular))
+        )
+      )
