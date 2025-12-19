@@ -8,6 +8,12 @@ SELECT
        ID_PROPOSTA – NUNCA NULL
        ===================================================== */
     ISNULL(p.id_proposta, 'NAO_TEM_PROPOSTA') AS id_proposta,
+    
+
+    /* =====================================================
+       CPF_CNPJ – NUNCA NULL
+       ===================================================== */
+    ISNULL(p.cpf_cnpj, 'NAO_TEM_CPF_CNPJ') AS cpf_cnpj,
 
     /* =====================================================
        DADOS ORIGEM UBER
