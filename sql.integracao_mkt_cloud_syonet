@@ -1,0 +1,115 @@
+SELECT
+    nome,
+    telefone,
+    optin,
+    DataHora,
+    Syonet_Sent,
+    (CASE 
+    WHEN empresa = '01 - BAMAQ CONTAGEM' THEN '1'
+    WHEN empresa = '02 - BAMAQ MONTES CLAROS' THEN '2'
+    WHEN empresa = '03 - BAMAQ VARGINHA' THEN '3'
+    WHEN empresa = '04 - BAMAQ UBERLANDIA' THEN '4'
+    WHEN empresa = '05 - BAMAQ SALVADOR' THEN '6'
+    WHEN empresa = '06 - BAMAQ FORTALEZA' THEN '8'
+    WHEN empresa = '07 - BAMAQ PIAUI' THEN '9'
+    WHEN empresa = '08 - BAMAQ SAO LUIS' THEN '10'
+    WHEN empresa = '09 - BAMAQ MANAUS' THEN '11'
+    WHEN empresa = '10 - BAMAQ RECIFE' THEN '12'
+    WHEN empresa = '11 - BAMAQ GOIANIA' THEN '13'
+    WHEN empresa = '12 - BAMAQ CUIABA' THEN '14'
+    WHEN empresa = '13 - BAMAQ MARITUBA' THEN '16'
+    WHEN empresa = '15 - BAMAQ MULTIMARCAS' THEN '18'
+    WHEN empresa = 'BAMAQ GWM BH' THEN '15'
+    WHEN empresa = 'BAMAQ GWM CAMPO GRANDE' THEN '16'
+    WHEN empresa = 'BAMAQ GWM CONTAGEM' THEN '24'
+    WHEN empresa = 'BAMAQ GWM DOURADOS' THEN '20'
+    WHEN empresa = 'BAMAQ GWM PAMPLHA' THEN '19'
+    WHEN empresa = 'BAMAQ MERCEDES-BENZ BH' THEN '11'
+    WHEN empresa = 'BAMAQ PLUS JF' THEN '23'
+    WHEN empresa = 'BAMAQ PORSCHE BH' THEN '17'
+    WHEN empresa = 'BAMAQ PORSCHE CAMPO GRANDE' THEN '21'
+    WHEN empresa = 'BAMAQ PORSCHE SALVADOR' THEN '18'
+    WHEN empresa = 'BAMAQ PORSCHE UBERLÂNDIA' THEN '22'
+    WHEN empresa = 'BAMAQ SEMINOVOS' THEN '13'
+    ELSE '24' 
+    END) AS empresa,
+    media,
+    tipo_evento,
+    origem,
+    funil,
+    'LPConsorcioGeral' AS SourceDE_Name,
+    email,
+    interesse,
+    grupo_evento
+FROM [LPConsorcioGeral] 
+WHERE Syonet_Sent = 'False'
+ 
+UNION ALL
+ 
+SELECT
+    nome,
+    telefone,
+    optin,
+    DataHora,
+    Syonet_Sent,
+    (CASE 
+    WHEN empresa = '01 - BAMAQ CONTAGEM' THEN '1'
+    WHEN empresa = '02 - BAMAQ MONTES CLAROS' THEN '2'
+    WHEN empresa = '03 - BAMAQ VARGINHA' THEN '3'
+    WHEN empresa = '04 - BAMAQ UBERLANDIA' THEN '4'
+    WHEN empresa = '05 - BAMAQ SALVADOR' THEN '6'
+    WHEN empresa = '06 - BAMAQ FORTALEZA' THEN '8'
+    WHEN empresa = '07 - BAMAQ PIAUI' THEN '9'
+    WHEN empresa = '08 - BAMAQ SAO LUIS' THEN '10'
+    WHEN empresa = '09 - BAMAQ MANAUS' THEN '11'
+    WHEN empresa = '10 - BAMAQ RECIFE' THEN '12'
+    WHEN empresa = '11 - BAMAQ GOIANIA' THEN '13'
+    WHEN empresa = '12 - BAMAQ CUIABA' THEN '14'
+    WHEN empresa = '13 - BAMAQ MARITUBA' THEN '16'
+    WHEN empresa = '15 - BAMAQ MULTIMARCAS' THEN '18'
+    ELSE '1' 
+    END) AS empresa,
+    media,
+    tipo_evento,
+    origem,
+    funil,
+    'de_lp_consorcio_pesados_leads' AS SourceDE_Name,
+    email,
+    interesse,
+    grupo_evento
+FROM [de_lp_consorcio_pesados_leads] 
+WHERE Syonet_Sent = 'False'
+ 
+UNION ALL
+ 
+SELECT
+    nome,
+    telefone,
+    optin,
+    DataHora,
+    Syonet_Sent,
+    (CASE 
+    WHEN empresa = 'BAMAQ GWM BH' THEN '15'
+    WHEN empresa = 'BAMAQ GWM CAMPO GRANDE' THEN '16'
+    WHEN empresa = 'BAMAQ GWM CONTAGEM' THEN '24'
+    WHEN empresa = 'BAMAQ GWM DOURADOS' THEN '20'
+    WHEN empresa = 'BAMAQ GWM PAMPLHA' THEN '19'
+    WHEN empresa = 'BAMAQ MERCEDES-BENZ BH' THEN '11'
+    WHEN empresa = 'BAMAQ PLUS JF' THEN '23'
+    WHEN empresa = 'BAMAQ PORSCHE BH' THEN '17'
+    WHEN empresa = 'BAMAQ PORSCHE CAMPO GRANDE' THEN '21'
+    WHEN empresa = 'BAMAQ PORSCHE SALVADOR' THEN '18'
+    WHEN empresa = 'BAMAQ PORSCHE UBERLÂNDIA' THEN '22'
+    WHEN empresa = 'BAMAQ SEMINOVOS' THEN '13'
+    ELSE '24' 
+    END) AS empresa,
+    media,
+    tipo_evento,
+    origem,
+    funil,
+    'de_lp_consorcio_automotivo_premium_leads' AS SourceDE_Name,
+    email,
+    interesse,
+    grupo_evento 
+FROM [de_lp_consorcio_automotivo_premium_leads] 
+WHERE Syonet_Sent = 'False'
