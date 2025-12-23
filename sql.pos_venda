@@ -1,9 +1,17 @@
 SELECT    
     pv.id_proposta,
+
+    /* ===============================
+       DADOS DO CLIENTE (PROPOSTAS)
+       =============================== */
     p.cnpj_cpf        AS cpf_cnpj,
     p.email           AS email,
     p.celular         AS celular,
     p.primeiro_nome   AS primeiro_nome,
+
+    /* ===============================
+       DADOS POS-VENDA
+       =============================== */
     pv.id_pessoa,
     pv.cd_grupo,
     pv.cd_cota,
@@ -30,13 +38,37 @@ SELECT
     pv.cd_pix_unificado,
     pv.ponto_venda,
     pv.enviar_boas_vindas
+
 FROM tb_pos_vendas pv
+
+/* ===============================
+   JOIN PROPOSTAS (EMAIL CORRETO)
+   =============================== */
 INNER JOIN tb_propostas p
         ON p.id_proposta = pv.id_proposta
+
+/* ===============================
+   JOIN HISTÓRICO (ANTIDUPLICIDADE)
+   =============================== */
+LEFT JOIN de_clientes_pos_vendas_historico h
+       ON h.id_proposta = pv.id_proposta
+
 WHERE
-    CAST(pv.data_alocacao AS DATE)
+    /* ===============================
+       SOMENTE NOVOS (NÃO PROCESSADOS)
+       =============================== */
+    h.id_proposta IS NULL
+
+    /* ===============================
+       DATA DE ALOCAÇÃO (D-1 ATÉ HOJE)
+       =============================== */
+    AND CAST(pv.data_alocacao AS DATE)
         BETWEEN CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
             AND CAST(GETDATE() AS DATE)
+
+    /* ===============================
+       FILTRO DE PONTO DE VENDA
+       =============================== */
     AND pv.ponto_venda IN (
         '000257',
         '000394',
@@ -44,4 +76,4 @@ WHERE
         '000407',
         '000459',
         '000405'
-    );
+    )
