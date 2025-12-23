@@ -5,7 +5,7 @@ SELECT
        DADOS DO CLIENTE (PROPOSTAS)
        =============================== */
     p.cnpj_cpf        AS cpf_cnpj,
-    p.email           AS email,
+    p.email           AS EmailAddress,
     p.celular         AS celular,
     p.primeiro_nome   AS primeiro_nome,
 
