@@ -1,0 +1,28 @@
+SELECT
+    COALESCE(p.id_pessoa, pv.id_pessoa, c.id_pessoa) AS id_pessoa_base,
+
+    p.id_pessoa  AS id_pessoa_tb_propostas,
+    pv.id_pessoa AS id_pessoa_tb_pos_vendas,
+    c.id_pessoa  AS id_pessoa_tb_clientes,
+
+    CASE
+        WHEN
+            ISNULL(p.id_pessoa, '') <> ISNULL(pv.id_pessoa, '')
+         OR ISNULL(p.id_pessoa, '') <> ISNULL(c.id_pessoa, '')
+         OR ISNULL(pv.id_pessoa, '') <> ISNULL(c.id_pessoa, '')
+        THEN 1
+        ELSE 0
+    END AS divergente_id_pessoa
+
+FROM tb_propostas p
+FULL OUTER JOIN tb_pos_vendas pv
+    ON pv.id_pessoa = p.id_pessoa
+FULL OUTER JOIN tb_clientes c
+    ON c.id_pessoa = COALESCE(p.id_pessoa, pv.id_pessoa)
+
+WHERE
+    (
+        ISNULL(p.id_pessoa, '') <> ISNULL(pv.id_pessoa, '')
+     OR ISNULL(p.id_pessoa, '') <> ISNULL(c.id_pessoa, '')
+     OR ISNULL(pv.id_pessoa, '') <> ISNULL(c.id_pessoa, '')
+    )
