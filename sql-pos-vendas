@@ -1,0 +1,47 @@
+SELECT    
+    pv.id_proposta,
+    p.cnpj_cpf        AS cpf_cnpj,
+    p.email           AS email,
+    p.celular         AS celular,
+    p.primeiro_nome   AS primeiro_nome,
+    pv.id_pessoa,
+    pv.cd_grupo,
+    pv.cd_cota,
+    pv.data_alocacao,
+    pv.valor_bem,
+    pv.tipo_bem,
+    pv.data_cadastro_orb,
+    pv.data_proxima_assembleia,
+    pv.forma_pagamento,
+    pv.situacao_contrato,
+    pv.data_contemplacao,
+    pv.tipo_contemplacao,
+    pv.ofertou_lance,
+    pv.link_boleto_lance,
+    pv.data_pagamento_lance,
+    pv.analise_credito_aprovada,
+    pv.etapa_contemplacao,
+    pv.status_etapa_contemplacao,
+    pv.saldo_devedor,
+    pv.qtde_parcelas_atraso,
+    pv.parcela_em_aberto,
+    pv.link_boleto_mes,
+    pv.data_pagamento,
+    pv.cd_pix_unificado,
+    pv.ponto_venda,
+    pv.enviar_boas_vindas
+FROM tb_pos_vendas pv
+INNER JOIN tb_propostas p
+        ON p.id_proposta = pv.id_proposta
+WHERE
+    CAST(pv.data_alocacao AS DATE)
+        BETWEEN CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
+            AND CAST(GETDATE() AS DATE)
+    AND pv.ponto_venda IN (
+        '000257',
+        '000394',
+        '000400',
+        '000407',
+        '000459',
+        '000405'
+    );
