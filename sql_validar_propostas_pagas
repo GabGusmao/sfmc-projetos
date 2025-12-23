@@ -1,0 +1,15 @@
+SELECT
+    id_proposta,
+    cnpj_cpf,
+    email,
+    celular,
+    primeiro_nome,
+    valor_proposta,
+    dt_pagamento,
+    status_proposta
+FROM tb_propostas
+WHERE
+    proposta_paga = 1
+    AND CAST(dt_pagamento AS DATE)
+        BETWEEN CAST('2025-12-17' AS DATE)
+            AND CAST('2025-12-23' AS DATE)
