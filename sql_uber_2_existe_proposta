@@ -1,0 +1,101 @@
+SELECT
+    /* =========================
+       DADOS UBER
+       ========================= */
+    api.contato,
+    api.tipo_contato,
+    api.status,
+    ISNULL(api.ip, '') AS ip,
+    api.data_criacao,
+
+    /* =========================
+       CHAVES
+       ========================= */
+    p.id_proposta,
+    p.id_pessoa,
+    p.id_produto,
+    p.cnpj_cpf,
+    p.email,
+    p.celular,
+
+    /* =========================
+       DATAS DA PROPOSTA
+       ========================= */
+    p.dt_proposta,
+    p.dt_fechamento,
+    p.dt_validade,
+    p.dt_ultima_modificacao,
+    p.dt_venda,
+
+    /* =========================
+       DADOS COMERCIAIS
+       ========================= */
+    p.cd_ponto_venda,
+    p.vendedor,
+    p.status_proposta,
+    p.valor_proposta,
+    p.tem_seguro,
+    p.tipo_pagamento,
+    p.dt_pagamento,
+
+    /* =========================
+       LINKS / PIX
+       ========================= */
+    p.link_boleto,
+    p.link_cartao,
+    p.link_contrato_naoassinado,
+    p.cd_pix,
+
+    /* =========================
+       PRODUTO / VENDA
+       ========================= */
+    p.tipo_bem,
+    p.ponto_venda,
+    p.tipo_lance,
+    p.primeiro_nome,
+
+    /* =========================
+       PIX UNIFICADO
+       ========================= */
+    p.cd_pix_unificado,
+    p.valor_pix_unificado,
+
+    /* =========================
+       OUTROS CAMPOS
+       ========================= */
+    p.debito_automatico,
+    p.dt_adesao,
+    p.dt_alocacao,
+    p.link_contrato_assinado,
+    p.uber_retencao,
+    p.dt_contemplacao,
+    p.acesso_aplicativo,
+    p.cli_information,
+    p.api_uber,
+    p.cd_cota,
+    p.cd_grupo,
+    p.contrato_assinado,
+    p.proposta_paga,
+
+    /* =========================
+       CONTROLE
+       ========================= */
+    api.contato_normalizado,
+    GETDATE() AS data_entrada
+
+FROM tb_api_uber api
+INNER JOIN tb_propostas p
+    ON (
+        (api.contato_normalizado LIKE '%@%'
+         AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.email)))
+        OR
+        (api.contato_normalizado LIKE '55%'
+         AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.celular)))
+    )
+
+WHERE
+    /* EXCLUI PROPOSTAS PAGAS */
+    ISNULL(p.proposta_paga, 0) <> 1
+
+    /* ONTEM + HOJE */
+    AND CAST(p.dt_proposta AS DATE) >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE))
