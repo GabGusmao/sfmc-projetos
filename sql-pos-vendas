@@ -1,13 +1,18 @@
 SELECT    
     pv.id_proposta,
-    p.cnpj_cpf        AS cpf_cnpj,
-    p.email           AS email,
-    p.celular         AS celular,
-    p.primeiro_nome   AS primeiro_nome,
+
+    p.cnpj_cpf      AS cpf_cnpj,
+    p.email         AS [e-mail],
+    p.celular       AS celular,
+    p.primeiro_nome AS primeiro_nome,
+
     pv.id_pessoa,
     pv.cd_grupo,
     pv.cd_cota,
-    pv.data_alocacao,
+
+    /* DATA EFETIVA (prioridade: pos_vendas → propostas) */
+    COALESCE(pv.data_alocacao, p.dt_alocacao) AS data_alocacao,
+
     pv.valor_bem,
     pv.tipo_bem,
     pv.data_cadastro_orb,
@@ -30,13 +35,27 @@ SELECT
     pv.cd_pix_unificado,
     pv.ponto_venda,
     pv.enviar_boas_vindas
+
 FROM tb_pos_vendas pv
+
 INNER JOIN tb_propostas p
-        ON p.id_proposta = pv.id_proposta
+    ON p.id_pessoa = pv.id_pessoa
+
+LEFT JOIN de_clientes_pos_vendas_historico h
+    ON h.id_proposta = pv.id_proposta
+
 WHERE
-    CAST(pv.data_alocacao AS DATE)
-        BETWEEN CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
-            AND CAST(GETDATE() AS DATE)
+    /* Não duplicar */
+    h.id_proposta IS NULL
+
+    /* Garante que exista ao menos uma data */
+    AND COALESCE(pv.data_alocacao, p.dt_alocacao) IS NOT NULL
+
+    /* ONTEM → HOJE (baseado na data resolvida) */
+    AND CAST(COALESCE(pv.data_alocacao, p.dt_alocacao) AS DATE) >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE))
+    AND CAST(COALESCE(pv.data_alocacao, p.dt_alocacao) AS DATE) <  CAST(GETDATE() AS DATE)
+
+    /* Apenas PDVs e-commerce */
     AND pv.ponto_venda IN (
         '000257',
         '000394',
@@ -44,4 +63,4 @@ WHERE
         '000407',
         '000459',
         '000405'
-    );
+    )
