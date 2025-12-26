@@ -1,0 +1,44 @@
+SELECT
+    /* ===============================
+       CHAVE DE NEGÓCIO
+       =============================== */
+    api.id_pessoa,
+
+    /* ===============================
+       CAMPOS REAIS DA TABELA UBER
+       =============================== */
+    api.contato,
+    api.contato_normalizado,
+    api.tipo_contato,
+    api.status,
+    api.ip,
+    api.data_criacao,
+
+    /* ===============================
+       CONTROLE
+       =============================== */
+    GETDATE()                    AS data_entrada,
+    'UBER_CARGA_INICIAL'         AS origem,
+
+    /* ===============================
+       DADOS DA PROPOSTA (SE EXISTIR)
+       =============================== */
+    ISNULL(p.id_proposta, 'SEM_PROPOSTA') AS id_proposta,
+    p.id_produto,
+    p.cnpj_cpf,
+    p.email,
+    p.celular,
+    p.dt_proposta,
+    p.dt_venda,
+    p.status_proposta,
+    p.valor_proposta,
+    p.tem_seguro,
+    p.tipo_pagamento
+
+FROM tb_api_uber api
+LEFT JOIN tb_propostas p
+       ON api.id_pessoa = p.id_pessoa
+
+WHERE CAST(api.data_criacao AS DATE) BETWEEN
+      CAST('2025-12-15' AS DATE)
+      AND CAST(DATEADD(HOUR,-3,GETDATE()) AS DATE)
