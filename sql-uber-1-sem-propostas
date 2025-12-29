@@ -1,0 +1,76 @@
+SELECT
+    api.contato,
+    api.contato_normalizado,
+    api.tipo_contato,
+    api.status,
+    api.ip,
+    api.data_criacao,
+
+    /* ===============================
+       ID_PESSOA (sp + sequencial, sem duplicar)
+       =============================== */
+    'sp' +
+    RIGHT(
+        '000000' +
+        CAST(
+            ROW_NUMBER() OVER (
+                ORDER BY api.data_criacao, api.contato_normalizado
+            )
+            +
+            ISNULL(
+                (
+                    SELECT MAX(
+                        CAST(REPLACE(id_pessoa, 'sp', '') AS INT)
+                    )
+                    FROM tb_api_uber
+                    WHERE id_pessoa LIKE 'sp%'
+                ),
+                0
+            )
+            AS VARCHAR(6)
+        ),
+        6
+    ) AS id_pessoa,
+
+    /* ===============================
+       EMAIL / CELULAR
+       =============================== */
+    CASE
+        WHEN api.contato_normalizado LIKE '%@%'
+        THEN api.contato_normalizado
+        ELSE NULL
+    END AS email,
+
+    CASE
+        WHEN api.contato_normalizado LIKE '55%'
+        THEN api.contato_normalizado
+        ELSE NULL
+    END AS celular
+
+FROM tb_api_uber api
+
+/* ===============================
+   ANTI-JOIN COM PROPOSTAS
+   (só quem NÃO existe lá)
+   =============================== */
+LEFT JOIN tb_propostas p
+    ON LTRIM(RTRIM(api.contato_normalizado)) IN (
+        LTRIM(RTRIM(p.email)),
+        LTRIM(RTRIM(p.celular))
+    )
+
+WHERE
+    /* Ontem e hoje – mantido */
+    CAST(api.data_criacao AS DATE)
+        BETWEEN CAST(DATEADD(day, -1, GETDATE()) AS DATE)
+            AND CAST(GETDATE() AS DATE)
+
+    /* Não sobrescreve id_pessoa */
+    AND (
+        api.id_pessoa IS NULL
+        OR LTRIM(RTRIM(api.id_pessoa)) = ''
+    )
+
+    /* GARANTIA: não existe na tb_propostas */
+    AND p.email IS NULL
+    AND p.celular IS NULL
