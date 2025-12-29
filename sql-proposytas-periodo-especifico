@@ -1,74 +1,39 @@
-SELECT    
-    p.id_proposta,
-    p.id_produto,
-    p.cnpj_cpf,
-    p.nome_completo,
-    p.email,
-    p.celular,
-    p.dt_proposta,
-    p.dt_fechamento,
-    p.dt_validade,
-    p.dt_ultima_modificacao,
-    p.dt_venda,
-    p.cd_ponto_venda,
-    p.vendedor,
-    p.status_proposta,
-    p.valor_proposta,
-    p.cd_promocional,
-    p.tem_seguro,
-    p.tipo_pagamento,
-    p.dt_pagamento,
-    p.link_boleto,
-    p.link_cartao,
-    p.link_contrato_naoassinado,
-    p.cd_pix,
-    p.end_point,
-    p.tipo_bem,
-    p.ponto_venda,
-    p.tipo_lance,
-    p.primeiro_nome,
-    p.cd_pix_unificado,
-    p.valor_pix_unificado,
-    p.debito_automatico,
-    p.dt_adesao,
-    p.dt_alocacao,
-    p.link_contrato_assinado,
-    p.uber_retencao,
-    p.dt_contemplacao,
-    p.acesso_aplicativo,
-    p.contrato_assinado,
-    p.proposta_paga,
-    p.id_pessoa,
+SELECT
+    /* ===============================
+       CHAVE DA JORNADA
+       =============================== */
+    pv.id_proposta,
 
-    CONVERT(CHAR(2), DATEPART(DAY, GETDATE())) AS dia_Entrada,
-    'br' AS Locale
+    /* ===============================
+       IDENTIFICAÇÃO
+       =============================== */
+    pv.id_pessoa,
+    pv.cpf_cnpj,
 
-FROM tb_propostas p
+    /* ===============================
+       CONTATO (TB_PROPOSTAS)
+       =============================== */
+    pr.email,
+    pr.celular,
 
-WHERE 
-    /* Apenas propostas ativas */
-    p.status_proposta = 'Ativa'
 
-    /* Evita e-mails internos */
-    AND p.email NOT LIKE '%bamaq%'
+    /* ===============================
+       DATA DE DISPARO
+       =============================== */
+    pv.data_alocacao,
 
-    /* PERÍODO FIXO: 14/12 até 26/12 */
-    AND CAST(p.dt_proposta AS DATE) 
-        BETWEEN '2025-12-14' AND '2025-12-26'
+    /* CONTROLE */
+    GETDATE() AS data_carga
 
-    /* Apenas PDVs e-commerce */
-    AND p.cd_ponto_venda IN (
-        '000257',
-        '000394',
-        '000400',
-        '000407',
-        '000459',
-        '000405'
-    )
+FROM tb_pos_vendas pv
 
-    /* Não envia duplicado (histórico) */
-    AND NOT EXISTS (
-        SELECT 1
-        FROM tb_nova_propostas_historico h
-        WHERE h.id_proposta = p.id_proposta
-    )
+INNER JOIN tb_propostas pr
+    ON pv.id_proposta = pr.id_proposta
+
+LEFT JOIN de_clientes_pos_vendas_historico h
+    ON pv.id_proposta = h.id_proposta
+
+WHERE
+    pv.data_alocacao >= CONVERT(DATE,'26/12/2025',103)
+    AND pv.data_alocacao <  CONVERT(DATE,'30/12/2025',103)
+    AND h.id_proposta IS NULL
