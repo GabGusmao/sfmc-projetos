@@ -1,18 +1,12 @@
-SELECT    
+SELECT
+    /* ===============================
+       TODOS OS CAMPOS DA TB_POS_VENDAS
+       =============================== */
+    pv.ponto_venda,
     pv.id_proposta,
-
-    p.cnpj_cpf      AS cpf_cnpj,
-    p.email         AS [e-mail],
-    p.celular       AS celular,
-    p.primeiro_nome AS primeiro_nome,
-
-    pv.id_pessoa,
     pv.cd_grupo,
     pv.cd_cota,
-
-    /* DATA EFETIVA (prioridade: pos_vendas → propostas) */
-    COALESCE(pv.data_alocacao, p.dt_alocacao) AS data_alocacao,
-
+    pv.data_alocacao,
     pv.valor_bem,
     pv.tipo_bem,
     pv.data_cadastro_orb,
@@ -33,34 +27,29 @@ SELECT
     pv.link_boleto_mes,
     pv.data_pagamento,
     pv.cd_pix_unificado,
-    pv.ponto_venda,
-    pv.enviar_boas_vindas
+    pv.enviar_boas_vindas,
+    pv.id_pessoa,
+
+    /* ===============================
+       CONTATO / DOCUMENTO (TB_PROPOSTAS)
+       =============================== */
+    pr.cpf_cnpj,
+    pr.email,
+    pr.celular,
+    pr.primeiro_nome,
+
+    /* CONTROLE */
+    GETDATE() AS data_carga
 
 FROM tb_pos_vendas pv
 
-INNER JOIN tb_propostas p
-    ON p.id_pessoa = pv.id_pessoa
+INNER JOIN tb_propostas pr
+    ON pv.id_proposta = pr.id_proposta
 
 LEFT JOIN de_clientes_pos_vendas_historico h
-    ON h.id_proposta = pv.id_proposta
+    ON pv.id_proposta = h.id_proposta
 
 WHERE
-    /* Não duplicar */
-    h.id_proposta IS NULL
-
-    /* Garante que exista ao menos uma data */
-    AND COALESCE(pv.data_alocacao, p.dt_alocacao) IS NOT NULL
-
-    /* ONTEM → HOJE (baseado na data resolvida) */
-    AND CAST(COALESCE(pv.data_alocacao, p.dt_alocacao) AS DATE) >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE))
-    AND CAST(COALESCE(pv.data_alocacao, p.dt_alocacao) AS DATE) <  CAST(GETDATE() AS DATE)
-
-    /* Apenas PDVs e-commerce */
-    AND pv.ponto_venda IN (
-        '000257',
-        '000394',
-        '000400',
-        '000407',
-        '000459',
-        '000405'
-    )
+    /* ontem + hoje (janela segura) */
+    pv.data_alocacao >= CONVERT(DATE, DATEADD(DAY,-1,GETDATE()))
+    AND h.id_proposta IS NULL
