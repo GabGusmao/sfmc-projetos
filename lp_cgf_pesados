@@ -1,0 +1,347 @@
+%%[
+/* ==========  CAPTURA  ========== */
+SET @nome      = TRIM(RequestParameter("nome"))
+SET @telefone  = TRIM(RequestParameter("cel"))
+SET @email     = LOWERCASE(TRIM(RequestParameter("email")))
+SET @modelo    = TRIM(RequestParameter("modelo"))
+SET @tempo     = TRIM(RequestParameter("tempo"))
+SET @estado    = TRIM(RequestParameter("estado"))
+SET @cidade    = TRIM(RequestParameter("cidade"))
+
+/* ==========  CAPTURA UTM  ========== */
+SET @utm_medium = TRIM(RequestParameter("utm_medium"))
+
+IF EMPTY(@utm_medium) THEN
+  SET @media = "INTERNET"
+ELSE
+  SET @media = @utm_medium
+ENDIF
+
+/* ==========  PADRÕES  ========== */
+SET @interesse     = @modelo
+SET @optin         = 1
+SET @empresa       = "01 - BAMAQ CONTAGEM"
+SET @tipo_evento   = "PROSPECCAO"
+SET @Syonet_Sent   = 0
+SET @origem        = "CGF MKT DIGITAL"
+SET @grupo_evento  = "OPORTUNIDADE"
+
+/* ==========  VALIDAÇÃO  ========== */
+IF NOT EMPTY(@email) AND NOT EMPTY(@nome) AND NOT EMPTY(@telefone) THEN
+
+   SET @existingEmail = Lookup("CGFMaqEquip", "email", "email", @email)
+
+   IF NOT EMPTY(@existingEmail) THEN
+
+      UpdateData("CGFMaqEquip", 1,
+         "email", @email,
+         "nome", @nome,
+         "telefone", @telefone,
+         "modelo", @modelo,
+         "tempo", @tempo,
+         "estado", @estado,
+         "cidade", @cidade,
+         "interesse", @interesse,
+         "empresa", @empresa,
+         "media", @media,
+         "tipo_evento", @tipo_evento,
+         "optin", @optin,
+         "Syonet_Sent", @Syonet_Sent,
+         "origem", @origem,
+         "grupo_evento", @grupo_evento,
+         "DataHora", NOW()
+      )
+
+   ELSE
+
+      InsertData("CGFMaqEquip",
+         "email", @email,
+         "nome", @nome,
+         "telefone", @telefone,
+         "modelo", @modelo,
+         "tempo", @tempo,
+         "estado", @estado,
+         "cidade", @cidade,
+         "interesse", @interesse,
+         "empresa", @empresa,
+         "media", @media,
+         "tipo_evento", @tipo_evento,
+         "optin", @optin,
+         "Syonet_Sent", @Syonet_Sent,
+         "origem", @origem,
+         "grupo_evento", @grupo_evento,
+         "DataHora", NOW()
+      )
+
+   ENDIF
+
+   Redirect("https://www.cgfseguros.com.br/obrigado")
+
+ENDIF
+]%%
+
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CGF Seguro de Máquinas e Equipamentos</title>
+
+  <!-- FONTS -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Arial:400,700&display=swap" rel="stylesheet">
+
+  <!-- RESET + BASE -->
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    img{max-width:100%;display:block}
+    body{font-family:'Source Sans Pro',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;color:#333;background:#fff}
+    a{text-decoration:none}
+    h1,h2,h3,h4,h5,h6{font-weight:700}
+    table{border-collapse:collapse;border-spacing:0;margin:0 auto}
+    td{padding:0;vertical-align:top}
+  </style>
+</head>
+<body>
+
+<!-- GOOGLE TAG MANAGER (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KQPSMXG" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- HERO -->
+<section style="background:#080000;padding:50px 15px">
+  <div style="max-width:960px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:40px">
+    <div style="flex:1 1 300px">
+      <img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/a0a0d4a1-cfdd-476d-a9fa-f3d4d3066322.png" alt="CGF" width="114">
+      <h1 style="color:#fff;font-size:50px;line-height:1.25;margin:30px 0">   <h2 style="color:#fff;font-size:34px;text-align:left;margin-bottom:10px">A <strong style="color:#96c11e">Maior Corretora de Seguros</strong> de Máquinas e Equipamentos do Brasil</h2>
+      <p style="color:#fff;font-size:14px">Aqui você encontra as melhores condições do mercado, pague em até 10x sem juros e tenha acesso aos nossos seguros feitos para você e sua empresa.</p>
+      <img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/c2cf7ffb-76f7-4425-afde-0b4126b47dd5.png" alt="Máquinas" style="margin-top:20px">
+      <p style="color:#fff;font-size:10px;text-align:center;margin-top:10px">*Imagens meramente ilustrativas. Consulte condições comerciais e vigência da oferta.</p>
+    </div>
+    <div style="flex:1 1 300px">
+      <div style="background:#000;border:1px solid #ecc352;border-radius:10px;padding:30px">
+        <h2 style="color:#fff;font-size:34px;text-align:center;margin-bottom:10px">Ganhe <strong style="color:#96c11e">10% de desconto</strong> em sua cotação.</h2>
+        <p style="color:#fff;font-size:16px;text-align:center;margin-bottom:20px">Preencha o formulário abaixo e receba uma cotação personalizada para sua necessidade.</p>
+
+
+     <!-- FORMULÁRIO -->
+<form id="conversion-form" action="%%=RequestParameter('PAGEURL')=%%" method="POST" style="display:flex;flex-direction:column;gap:18px">
+  <input type="hidden" name="token_rdstation" value="0b4dbdd3c77e4679aefba1d176074105">
+
+  <input class="bricks-form__input" type="text" name="nome" placeholder="Nome *" required
+    style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;border:1px solid #ccc;">
+
+  <input class="bricks-form__input" type="tel" name="cel" placeholder="Celular *" required
+    style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;border:1px solid #ccc;">
+
+  <input class="bricks-form__input" type="email" name="email" placeholder="Email *" required
+    style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;border:1px solid #ccc;">
+
+  <select class="bricks-form__input" name="modelo" required
+    style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;border:1px solid #ccc;">
+    <option value="">Qual o modelo da sua máquina/equipamento *</option>
+    <option>Retroescavadeira</option><option>Escavadeira</option><option>Pá Carregadeira</option>
+    <option>Trator</option><option>Motoniveladora</option><option>Rolo compactador</option>
+    <option>Mini Carregadeira</option><option>Mini Escavadeira</option><option>Pulverizador</option>
+    <option>Colheitadeira / Colhedora / Ceifadeira</option><option>Implementos Agrícolas</option><option>Outras</option>
+  </select>
+
+  <select class="bricks-form__input" name="tempo" required
+    style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;border:1px solid #ccc;">
+    <option value="">Qual Tempo da sua máquina? *</option>
+    <option>Até 1 ano</option><option>2 a 10 anos</option><option>11 a 19 anos</option>
+  </select>
+
+  <select class="bricks-form__input" name="estado" required
+    style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;border:1px solid #ccc;">
+    <option value="">Estado *</option>
+    <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option>
+    <option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+    <option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option>
+    <option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+    <option>SP</option><option>SE</option><option>TO</option>
+  </select>
+
+  <input class="bricks-form__input" type="text" name="cidade" placeholder="Cidade *" required
+    style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;border:1px solid #ccc;">
+
+  <label style="color:#fff;font-size:14px"><input type="checkbox"> Eu concordo em receber comunicações.</label>
+
+  <p style="color:#fff;font-size:11px">Ao informar meus dados, eu concordo com a <a href="https://www.cgfseguros.com.br/politica-de-privacidade-e-seguranca-de-dados" target="_blank" style="color:#fff;text-decoration:underline">Política de Privacidade</a>.</p>
+
+  <button style="background:#96c11e;color:#000;border:none;border-radius:10px;height:64px;font-size:22px;font-weight:700;cursor:pointer;margin-top:10px;">Fazer Cotação</button>
+</form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TÍTULO COBERTURAS -->
+<section style="background:#96c11e;padding:40px 15px;text-align:center">
+  <h2 style="font-size:50px;color:#000;margin-bottom:10px">Leve segurança para as suas Máquinas e Equipamentos</h2>
+  <p style="font-size:24px;color:#5d5d5d">Veja abaixo nossas principais coberturas.</p>
+</section>
+
+<!-- DIFERENCIAIS – CLOUDPAGE READY -->
+<style>
+.coberturas-section{
+  background:#96c11e;
+  padding:40px 15px;
+}
+.coberturas-table{
+  width:100%;
+  max-width:700px;
+  margin:0 auto;
+  border-collapse:collapse;
+  background:#96c11e;
+}
+.coberturas-table td.col{
+  width:33.333%;
+  padding:10px;
+  vertical-align:top;
+}
+.quadro{
+  border:3px solid #fbaf01;
+  border-radius:10px;
+  background:#000; /* fundo PRETO interno */
+  height:220px;
+  padding:20px;
+  text-align:center;
+}
+.quadro img{
+  max-width:100%;
+  height:auto;
+  margin:0 auto 10px;
+}
+.quadro p{
+  margin:0;
+  font:700 16px/1.2 Arial,Helvetica,sans-serif;
+  color:#fff;
+}
+
+/* RESPONSIVO: 2 colunas */
+@media(max-width:768px){
+  .coberturas-table td.col{
+    width:50%;
+    display:inline-block;
+    vertical-align:top;
+  }
+  .quadro{
+    height:auto;
+    margin-bottom:15px;
+    padding:15px;
+  }
+  .quadro p{
+    font-size:14px;
+  }
+}
+
+/* RESPONSIVO: 1 coluna em telas muito pequenas */
+@media(max-width:480px){
+  .coberturas-table td.col{
+    width:100%;
+    display:block;
+  }
+}
+</style>
+
+<section class="coberturas-section">
+  <table class="coberturas-table" cellpadding="0" cellspacing="0">
+    <tr>
+      <td class="col">
+        <div class="quadro">
+          <img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/630fcb42-55d6-401a-b2a3-bd641457bf48.png" alt="">
+          <p>Sinistros contra acidentes elétricos</p>
+        </div>
+      </td>
+      <td class="col">
+        <div class="quadro">
+          <img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/849b2080-abe2-45c7-8596-b72dbcf7ca5d.png" alt="">
+          <p>Colisões e danos de causa externa</p>
+        </div>
+      </td>
+      <td class="col">
+        <div class="quadro">
+          <img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/3fa68413-7f82-4148-8d3f-3d450462dffe.png" alt="">
+          <p>Proteção contra roubo e furto simples</p>
+        </div>
+      </td>
+      <td class="col">
+        <div class="quadro">
+          <img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/bc363f7e-1c00-4c08-be1b-ca4f234e41f2.png" alt="">
+          <p>Proteção contra danos materiais</p>      <!-- Spacer -->
+      <table width="100%" cellpadding="0" cellspacing="0"><tr><td height="15"></td></tr></table>
+
+        </div>
+      </td>
+     
+    
+      <td class="col">
+        <div class="quadro">
+          <img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/d4bee5db-9c54-4d7c-832d-792c52841be7.png" alt="">
+          <p>Proteções contra operações próximas à água</p>
+        </div>
+      </td>
+      <td class="col">
+        <div class="quadro">
+          <img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/99087a0b-1f48-460b-98ef-8fed1fb8c222.png" alt="">
+          <p>Seguros contra terceiros</p>      <!-- Spacer -->
+      <table width="100%" cellpadding="0" cellspacing="0"><tr><td height="15"></td></tr></table>
+
+        </div>
+      </td>
+    </tr>
+  </table>
+</section>
+
+<!-- TEXTO ABAIXO DOS CARDS -->
+<section style="background:#96c11e;padding:20px 15px;text-align:center">
+  <p style="color:#000;font-size:16px;max-width:700px;margin:0 auto">
+    Conte com uma equipe de especialista para proteger sua frota. Com a CGF Seguros você tem a cobertura de furto simples até mesmo nos planos mais básicos.
+  </p>
+</section>
+<!-- SOBRE A CGF -->
+<section style="background:#030609;padding:50px 15px">
+  <div style="max-width:960px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:40px">
+    <div style="flex:1 1 400px"><img src="https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/a5055d08-2c1d-40de-a4d8-aafe7ccc673a.gif" alt=""></div>
+    <div style="flex:1 1 300px">
+      <h2 style="color:#fff;font-size:48px;line-height:1;margin-bottom:15px">A CGF Seguros <br><span style="color:#96c11e">atua em todo Brasil</span></h2>
+      <p style="color:#fff;font-size:16px;margin-bottom:20px">A CGF Seguros é a maior corretora de Seguros de máquinas e equipamentos. Oferecendo soluções para mais de 6 mil clientes e mais de 10 mil máquinas, em parceria com as maiores seguradoras do país e com um atendimento personalizado conforme a necessidade de cada cliente.</p>
+      <a href="#conversion-form" style="background:#96c11e;color:#fff;padding:14px 30px;border-radius:10px;font-weight:700;text-decoration:none">Faça sua cotação</a>
+    </div>
+  </div>
+</section>
+
+<!-- +20 ANOS -->
+<section style="background:#96c11e;padding:50px 15px">
+  <div style="max-width:960px;margin:0 auto;text-align:center">
+    <h2 style="font-size:72px;color:#000;line-height:1;margin-bottom:10px">+ DE <span style="color:#fff">20 ANOS</span> DE MERCADO</h2>
+    <p style="max-width:600px;margin:0 auto 30px;font-size:18px;color:#000;background:#96c11e;padding:10px">Somos a maior corretora de seguros de máquinas e equipamentos do Brasil, oferecendo um atendimento personalizado de acordo com a necessidade do nosso cliente. Nosso objetivo é proteger seu patrimônio e a produtividade do seu negócio.</p>
+    <a href="#conversion-form" style="background:#000;color:#96c11e;padding:14px 30px;border-radius:10px;font-weight:700;text-decoration:none">Fale com nossos especialistas</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<section style="background:#000;padding:20px 15px;text-align:center">
+  <p style="color:#fff;font-size:12px">CGF Administradora e Corretora de Seguros Ltda: - CNPJ: 60.250.776/0001-91<br>
+  <strong>BR 381 - KM 2.111 - Bandeirantes - Contagem/MG - CEP: 32240-090</strong></p>
+</section>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.14.3/dist/js/uikit.min.js"></script>
+<script>
+  /* Adiciona UTM's como campos hidden */
+  function addUtms(){
+    const params=new URLSearchParams(window.location.search);
+    const form=document.getElementById('conversion-form');
+    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid'].forEach(p=>{
+      if(params.get(p)){
+        const i=document.createElement('input');i.type='hidden';i.name=p;i.value=params.get(p);
+        form.appendChild(i);
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded',addUtms);
+</script>
+
+</body>
+  </html>
