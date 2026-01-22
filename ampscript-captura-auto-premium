@@ -12,79 +12,42 @@ ELSE
   SET @optin = 1
 ENDIF
 
-/* ================= PADRÕES DE NEGÓCIO ================= */
-SET @empresa      = "01 - BAMAQ CONTAGEM"
-SET @media        = "SITE CGF AUTO PREMIUM"
-SET @tipo_evento  = "PROSPECCAO"
-SET @origem       = "CGF MKT DIGITAL"
-SET @grupo_evento = "OPORTUNIDADE"
-SET @Syonet_Sent  = 0
-
 /* ================= VALIDAÇÃO ================= */
 IF NOT EMPTY(@nome) AND NOT EMPTY(@telefone) AND NOT EMPTY(@email) THEN
 
-  /* ================= VERIFICA EXISTÊNCIA ================= */
-  SET @existingByEmail    = Lookup("cgfautopremium", "email", "email", @email)
-  SET @existingByTelefone = Lookup("cgfautopremium", "telefone", "telefone", @telefone)
+  SET @existingEmail = Lookup("cgfautopremium", "email", "email", @email)
 
-  /* ================= UPDATE ================= */
-  IF NOT EMPTY(@existingByEmail) OR NOT EMPTY(@existingByTelefone) THEN
+  IF NOT EMPTY(@existingEmail) THEN
 
-    /* Atualiza usando email se existir, senão usa telefone */
-    IF NOT EMPTY(@existingByEmail) THEN
+    UpdateData("cgfautopremium", 1,
+      "email", @email,
+      "nome", @nome,
+      "telefone", @telefone,
+      "optin", @optin
+    )
 
-      UpdateData("cgfautopremium", 1,
-        "email", @email,
-        "nome", @nome,
-        "telefone", @telefone,
-        "optin", @optin,
-        "empresa", @empresa,
-        "media", @media,
-        "tipo_evento", @tipo_evento,
-        "origem", @origem,
-        "grupo_evento", @grupo_evento,
-        "Syonet_Sent", @Syonet_Sent,
-        "DataHora", NOW()
-      )
-
-    ELSE
-
-      UpdateData("cgfautopremium", 1,
-        "telefone", @telefone,
-        "nome", @nome,
-        "email", @email,
-        "optin", @optin,
-        "empresa", @empresa,
-        "media", @media,
-        "tipo_evento", @tipo_evento,
-        "origem", @origem,
-        "grupo_evento", @grupo_evento,
-        "Syonet_Sent", @Syonet_Sent,
-        "DataHora", NOW()
-      )
-
-    ENDIF
-
-  /* ================= INSERT ================= */
   ELSE
 
     InsertData("cgfautopremium",
       "email", @email,
       "nome", @nome,
       "telefone", @telefone,
-      "optin", @optin,
-      "empresa", @empresa,
-      "media", @media,
-      "tipo_evento", @tipo_evento,
-      "origem", @origem,
-      "grupo_evento", @grupo_evento,
-      "Syonet_Sent", @Syonet_Sent,
-      "DataHora", NOW()
+      "optin", @optin
     )
 
   ENDIF
 
-  Redirect("https://cloud.marketing.cgfseguros.com.br/obrigada-auto-premium")
+  Redirect("https://cloud.marketing.cgfseguros.com.br/obrigada")
 
 ENDIF
 ]%%
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Auto Premium</title>
+</head>
+<body>
+</body>
+</html>
