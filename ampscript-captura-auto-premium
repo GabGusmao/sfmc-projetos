@@ -1,0 +1,66 @@
+%%[
+/* ================= CAPTURA ================= */
+SET @nome     = TRIM(RequestParameter("nome"))
+SET @telefone = TRIM(RequestParameter("telefone"))
+SET @email    = LOWERCASE(TRIM(RequestParameter("email")))
+SET @optin    = RequestParameter("optin")
+
+/* ================= NORMALIZA OPTIN ================= */
+IF EMPTY(@optin) THEN
+  SET @optin = 0
+ELSE
+  SET @optin = 1
+ENDIF
+
+/* ================= PADRÕES DE NEGÓCIO ================= */
+SET @empresa      = "01 - BAMAQ CONTAGEM"
+SET @media        = "SITE CGF AUTO PREMIUM"
+SET @tipo_evento  = "PROSPECCAO"
+SET @origem       = "CGF MKT DIGITAL"
+SET @grupo_evento = "OPORTUNIDADE"
+SET @Syonet_Sent  = 0
+
+/* ================= VALIDAÇÃO ================= */
+IF NOT EMPTY(@nome) AND NOT EMPTY(@telefone) AND NOT EMPTY(@email) THEN
+
+  /* ================= UPSERT POR EMAIL ================= */
+  SET @existingEmail = Lookup("cgfautopremium", "email", "email", @email)
+
+  IF NOT EMPTY(@existingEmail) THEN
+
+    UpdateData("cgfautopremium", 1,
+      "email", @email,
+      "nome", @nome,
+      "telefone", @telefone,
+      "optin", @optin,
+      "empresa", @empresa,
+      "media", @media,
+      "tipo_evento", @tipo_evento,
+      "origem", @origem,
+      "grupo_evento", @grupo_evento,
+      "Syonet_Sent", @Syonet_Sent,
+      "DataHora", NOW()
+    )
+
+  ELSE
+
+    InsertData("cgfautopremium",
+      "email", @email,
+      "nome", @nome,
+      "telefone", @telefone,
+      "optin", @optin,
+      "empresa", @empresa,
+      "media", @media,
+      "tipo_evento", @tipo_evento,
+      "origem", @origem,
+      "grupo_evento", @grupo_evento,
+      "Syonet_Sent", @Syonet_Sent,
+      "DataHora", NOW()
+    )
+
+  ENDIF
+
+  Redirect("https://cloud.marketing.cgfseguros.com.br/obrigada-auto-premium")
+
+ENDIF
+]%%
