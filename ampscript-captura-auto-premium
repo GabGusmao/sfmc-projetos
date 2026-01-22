@@ -23,25 +23,49 @@ SET @Syonet_Sent  = 0
 /* ================= VALIDAÇÃO ================= */
 IF NOT EMPTY(@nome) AND NOT EMPTY(@telefone) AND NOT EMPTY(@email) THEN
 
-  /* ================= UPSERT POR EMAIL ================= */
-  SET @existingEmail = Lookup("cgfautopremium", "email", "email", @email)
+  /* ================= VERIFICA EXISTÊNCIA ================= */
+  SET @existingByEmail    = Lookup("cgfautopremium", "email", "email", @email)
+  SET @existingByTelefone = Lookup("cgfautopremium", "telefone", "telefone", @telefone)
 
-  IF NOT EMPTY(@existingEmail) THEN
+  /* ================= UPDATE ================= */
+  IF NOT EMPTY(@existingByEmail) OR NOT EMPTY(@existingByTelefone) THEN
 
-    UpdateData("cgfautopremium", 1,
-      "email", @email,
-      "nome", @nome,
-      "telefone", @telefone,
-      "optin", @optin,
-      "empresa", @empresa,
-      "media", @media,
-      "tipo_evento", @tipo_evento,
-      "origem", @origem,
-      "grupo_evento", @grupo_evento,
-      "Syonet_Sent", @Syonet_Sent,
-      "DataHora", NOW()
-    )
+    /* Atualiza usando email se existir, senão usa telefone */
+    IF NOT EMPTY(@existingByEmail) THEN
 
+      UpdateData("cgfautopremium", 1,
+        "email", @email,
+        "nome", @nome,
+        "telefone", @telefone,
+        "optin", @optin,
+        "empresa", @empresa,
+        "media", @media,
+        "tipo_evento", @tipo_evento,
+        "origem", @origem,
+        "grupo_evento", @grupo_evento,
+        "Syonet_Sent", @Syonet_Sent,
+        "DataHora", NOW()
+      )
+
+    ELSE
+
+      UpdateData("cgfautopremium", 1,
+        "telefone", @telefone,
+        "nome", @nome,
+        "email", @email,
+        "optin", @optin,
+        "empresa", @empresa,
+        "media", @media,
+        "tipo_evento", @tipo_evento,
+        "origem", @origem,
+        "grupo_evento", @grupo_evento,
+        "Syonet_Sent", @Syonet_Sent,
+        "DataHora", NOW()
+      )
+
+    ENDIF
+
+  /* ================= INSERT ================= */
   ELSE
 
     InsertData("cgfautopremium",
