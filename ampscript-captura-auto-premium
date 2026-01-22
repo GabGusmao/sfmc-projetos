@@ -1,5 +1,6 @@
 %%[
 /* ================= CAPTURA ================= */
+VAR @nome, @telefone, @email, @optin
 SET @nome     = TRIM(RequestParameter("nome"))
 SET @telefone = TRIM(RequestParameter("telefone"))
 SET @email    = LOWERCASE(TRIM(RequestParameter("email")))
@@ -13,41 +14,76 @@ ELSE
 ENDIF
 
 /* ================= VALIDAÇÃO ================= */
-IF NOT EMPTY(@nome) AND NOT EMPTY(@telefone) AND NOT EMPTY(@email) THEN
+IF EMPTY(@nome) OR EMPTY(@telefone) OR EMPTY(@email) THEN
+  /* evita erro + não executa inserts */
+  OutputLine("Erro ao processar o formulário.")
+  RETURN
+ENDIF
 
-  SET @existingEmail = Lookup("cgfautopremium", "email", "email", @email)
+/* ================= PADRÕES ================= */
+VAR @empresa, @media, @tipo_evento, @origem, @grupo_evento, @Syonet_Sent
+SET @empresa      = "01 - BAMAQ CONTAGEM"
+SET @media        = "SITE CGF AUTO PREMIUM"
+SET @tipo_evento  = "PROSPECCAO"
+SET @origem       = "CGF MKT DIGITAL"
+SET @grupo_evento = "OPORTUNIDADE"
+SET @Syonet_Sent  = 0
 
-  IF NOT EMPTY(@existingEmail) THEN
+/* ================= UPSERT LEAD ================= */
+VAR @existingEmail
+SET @existingEmail = Lookup("cgfautopremium", "email", "email", @email)
 
-    UpdateData("cgfautopremium", 1,
-      "email", @email,
-      "nome", @nome,
-      "telefone", @telefone,
-      "optin", @optin
-    )
+IF NOT EMPTY(@existingEmail) THEN
 
-  ELSE
+  /* ===== UPDATE ===== */
+  UpdateData(
+    "cgfautopremium", 1,
+    "email", @email,
+    "nome", @nome,
+    "telefone", @telefone,
+    "optin", @optin,
+    "empresa", @empresa,
+    "media", @media,
+    "tipo_evento", @tipo_evento,
+    "origem", @origem,
+    "grupo_evento", @grupo_evento,
+    "Syonet_Sent", @Syonet_Sent,
+    "DataHora", NOW()
+  )
 
-    InsertData("cgfautopremium",
-      "email", @email,
-      "nome", @nome,
-      "telefone", @telefone,
-      "optin", @optin
-    )
+ELSE
 
-  ENDIF
-
-  Redirect("https://cloud.marketing.cgfseguros.com.br/obrigada")
+  /* ===== INSERT ===== */
+  InsertData(
+    "cgfautopremium",
+    "email", @email,
+    "nome", @nome,
+    "telefone", @telefone,
+    "optin", @optin,
+    "empresa", @empresa,
+    "media", @media,
+    "tipo_evento", @tipo_evento,
+    "origem", @origem,
+    "grupo_evento", @grupo_evento,
+    "Syonet_Sent", @Syonet_Sent,
+    "DataHora", NOW()
+  )
 
 ENDIF
-]%%
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="utf-8">
-  <title>Auto Premium</title>
-</head>
-<body>
-</body>
-</html>
+/* ================= ESPELHAMENTO PARA JOURNEY ================= */
+/* ⚠️ AQUI É O SEGREDO: SOMENTE EMAIL INTERNO */
+InsertData(
+  "jb_alerta_auto_premium",
+  "subscriber_key", "SEU_EMAIL_PARA_TESTE@DOMINIO.COM",
+  "nome", @nome,
+  "email", @email,
+  "telefone", @telefone,
+  "origem", @origem,
+  "DataHora", NOW()
+)
+
+/* ================= REDIRECT FINAL ================= */
+Redirect("https://cloud.marketing.cgfseguros.com.br/auto-premium-obrigada")
+RETURN
+]%%
