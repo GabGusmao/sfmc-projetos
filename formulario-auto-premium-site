@@ -1,81 +1,16 @@
-<div id="box-cotacao" style="background:rgba(255,255,255,0.92);
-            border-radius:12px;
-            padding:30px;
-            box-shadow:0 10px 30px rgba(0,0,0,.35);
-            max-width:420px">
-
-  <h2 style="text-align:center;font-size:32px;margin-bottom:20px;color:#000;font-weight:700;">
-    Faça sua cotação
-  </h2>
-
-  <form
-    id="conversion-form"
-    action="https://cloud.marketing.cgfseguros.com.br/auto-premium-captura"
-    method="POST"
-    novalidate>
-
-    <!-- Nome -->
-    <input
-      type="text"
-      id="nome"
-      name="nome"
-      placeholder="Nome completo *"
-      required
-      minlength="3"
-      maxlength="50"
-      style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;
-             border:1px solid #ccc;width:100%;margin-bottom:15px">
-
-    <!-- Telefone (sempre enviado com name) -->
-    <input
-      type="tel"
-      id="telefone"
-      name="telefone"
-      placeholder="55DDD9XXXXXXXX"
-      value="55"
-      required
-      style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;
-             border:1px solid #ccc;width:100%;margin-bottom:15px">
-
-    <!-- Email -->
-    <input
-      type="email"
-      id="email"
-      name="email"
-      placeholder="E-mail *"
-      required
-      style="height:56px;font-size:18px;padding:0 16px;border-radius:8px;
-             border:1px solid #ccc;width:100%;margin-bottom:15px">
-
-    <!-- Opt-in -->
-    <label style="display:block;margin-bottom:15px;font-size:14px;color:#333">
-      <input type="checkbox" name="optin" value="1">
-      Eu concordo em receber comunicações da CGF Auto Premium.
-    </label>
-
-    <!-- Botão -->
-    <button
-      type="submit"
-      style="background:#96c11e;color:#000;border:none;border-radius:10px;
-             height:64px;font-size:22px;font-weight:700;width:100%;cursor:pointer">
-      Solicitar cotação
-    </button>
-
-  </form>
-</div>
-
 <script>
 const telefoneInput = document.getElementById("telefone");
 
 telefoneInput.addEventListener("input", function () {
+  // Remove tudo que não for número
   let valor = telefoneInput.value.replace(/\D/g, "");
 
-  // garante 55 no início
+  // Sempre mantém começando com 55
   if (!valor.startsWith("55")) {
     valor = "55" + valor.replace(/^55/, "");
   }
 
-  // limita a 13 dígitos (55 + DDD + 9)
+  // Limita a 13 dígitos (55 + DDD + 9 dígitos)
   if (valor.length > 13) {
     valor = valor.substring(0, 13);
   }
@@ -83,28 +18,36 @@ telefoneInput.addEventListener("input", function () {
   telefoneInput.value = valor;
 });
 
-document.getElementById("conversion-form").addEventListener("submit", function (e) {
+
+document.getElementById("conversion-form").addEventListener("submit", function(e){
+
   const nome = document.getElementById("nome").value.trim();
   const email = document.getElementById("email").value.trim();
   const telefone = telefoneInput.value;
 
-  if (nome.length < 3) {
+  // Valida nome
+  if(nome.length < 3){
     alert("Digite seu nome completo.");
     e.preventDefault();
     return;
   }
 
+  // Valida email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
+  if(!emailRegex.test(email)){
     alert("Digite um e-mail válido.");
     e.preventDefault();
     return;
   }
 
-  if (telefone.length !== 13 || telefone.substring(4, 5) !== "9") {
+  // Valida telefone (13 dígitos, celular começa com 9)
+  if(telefone.length !== 13 || telefone.substring(4,5) !== "9"){
     alert("Digite um celular válido com DDD. Ex: 5531999998888");
     e.preventDefault();
     return;
   }
+
+  // Envia telefone normalizado
+  document.getElementById("telefone_real").value = telefone;
 });
 </script>
