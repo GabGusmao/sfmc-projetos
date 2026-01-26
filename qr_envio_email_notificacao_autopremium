@@ -1,0 +1,18 @@
+SELECT
+    'gabriela.gusmao@cgfseguros.com.br' AS subscriber_key,
+    'gabriela.gusmao@cgfseguros.com.br' AS EmailAddress,
+
+    nome,
+    email,
+    telefone,
+    optin,
+    empresa,
+    media,
+    tipo_evento,
+    origem,
+    grupo_evento,
+    DataHora
+
+FROM cgfautopremium
+WHERE email IS NOT NULL
+  AND (Syonet_Sent = 0 OR Syonet_Sent IS NULL)
