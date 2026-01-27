@@ -1,0 +1,132 @@
+%%[
+/* =========================================================
+   CONFIGURAÇÃO DO EMAIL
+   ---------------------------------------------------------
+   IMPORTANTE:
+   - NÃO alterar HTML abaixo
+   - NÃO remover variáveis
+   - As alterações aparecem apenas em PREVIEW / TEST SEND após selecionar algum lead
+   ========================================================= */
+
+/* ===== DECLARAÇÃO DE VARIÁVEIS NÃO ALTERAR===== */
+VAR @saudacao
+VAR @texto_abertura
+VAR @titulo_box
+VAR @texto_box
+VAR @img_header
+VAR @telefone_contato
+VAR @link_whatsapp
+VAR @site_url
+
+/* ===== CONTEÚDO EDITÁVEL  – EDITAR SOMENTE AQUI ===== */
+SET @saudacao        = "Olá!"
+SET @texto_abertura  = "Este é o primeiro bloco de conteúdo, aqui podemos inserir o texto."
+SET @titulo_box      = "Este é o título em verde do bloco de destaque"
+SET @texto_box       = "Conteúdo do segundo bloco."
+
+/* ===== IMAGEM DO TOPO (obrigatório fazer upload da imagem no Content Builder, copiar o link e inserir abaixo) ===== */
+SET @img_header = "https://image.marketing.cgfseguros.com.br/lib/fe3011737164057b7c1671/m/1/f0e95879-3ff6-4549-905d-6e9051779ff2.gif"
+
+/* ===== RODAPÉ ===== */
+SET @telefone_contato = "(31) 3369-1667"
+SET @link_whatsapp    = "https://wa.me/message/S7BQCAOVCZM3A1"
+SET @site_url         = "https://cgfseguros.com.br"
+]%%
+
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CGF Seguros</title>
+
+  <style>
+    body{margin:0;padding:0;background:#0f0f0f;font-family:Arial,Helvetica,sans-serif}
+    table{border-collapse:collapse}
+    img{display:block;border:0}
+    .container{max-width:600px;margin:0 auto}
+    .card{background:#0b0b0b;border-radius:12px}
+    .pad{padding:22px}
+    p{color:#e6e6e6;font-size:15px;line-height:1.4;margin:0 0 12px}
+    .title{color:#96c11e;font-size:20px;font-weight:bold}
+    .footer{background:#161616;border-radius:10px;padding:14px}
+    a{color:#9fd54d;text-decoration:none}
+  </style>
+</head>
+
+<body>
+<custom name="opencounter" type="tracking"/>
+
+<center class="container">
+
+  <!-- ================= HEADER ================= -->
+  <img
+    src="%%=v(@img_header)=%%"
+    width="600"
+    style="width:100%;max-width:600px;height:auto"
+    alt="CGF Seguros">
+
+  <!-- ================= CORPO ================= -->
+  <table width="100%" class="card">
+    <tr>
+      <td class="pad">
+
+        <p style="font-size:18px;color:#eaeaea">
+          %%=v(@saudacao)=%%
+        </p>
+
+        <p>
+          %%=v(@texto_abertura)=%%
+        </p>
+
+        <!-- BLOCO DE DESTAQUE -->
+        <table width="100%" style="background:#191919;border-radius:10px">
+          <tr>
+            <td class="pad">
+              <p class="title">
+                %%=v(@titulo_box)=%%
+              </p>
+              <p>
+                %%=v(@texto_box)=%%
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <p style="font-weight:bold;margin-top:20px">Até breve!</p>
+        <p>Equipe CGF Seguros</p>
+
+        <!-- ================= RODAPÉ ================= -->
+        <table width="100%" class="footer">
+          <tr>
+            <td>
+              <p style="color:#fff;font-weight:bold">Fale com a gente</p>
+
+              <p>
+                <a href="%%=RedirectTo(@link_whatsapp)=%%">
+                  %%=v(@telefone_contato)=%%
+                </a><br>
+
+                <a href="%%=RedirectTo(@site_url)=%%">
+                  %%=v(@site_url)=%%
+                </a>
+              </p>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+  <!-- ================= RODAPÉ LEGAL ================= -->
+  <p style="font-size:12px;color:#888;text-align:center">
+    Esse email foi enviado por: %%Member_Busname%%<br>
+    %%Member_Addr%%, %%Member_City%% - %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%%<br>
+    <a href="%%unsub_center_url%%">Descadastrar</a> |
+    <a href="%%profile_center_url%%">Preferências</a>
+  </p>
+
+</center>
+</body>
+</html>
