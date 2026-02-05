@@ -1,0 +1,32 @@
+SELECT
+    /* =====================================================
+       CHAVE DA DE DE CONTROLE
+       (contém ID_PESSOA)
+       ===================================================== */
+    cjb.id_proposta,
+
+    /* =====================================================
+       CAMPOS VINDOS DA TB_PROPOSTAS
+       ===================================================== */
+    p.tipo_bem                    AS tipo_bem,
+    p.dt_alocacao                 AS dt_alocacao,
+    p.dt_proposta                 AS dt_proposta,
+    p.contrato_assinado           AS contrato_assinado,
+    p.proposta_paga               AS proposta_paga,
+    p.valor_proposta              AS valor_proposta,
+    p.id_pessoa                   AS id_pessoa,
+
+    /* =====================================================
+       CAMPOS DA PRÓPRIA TB_CONTROLE (MANTIDOS)
+       ===================================================== */
+    cjb.ultimo_conteudo_enviado   AS ultimo_conteudo_enviado,
+    cjb.dt_ultimo_conteudo        AS dt_ultimo_conteudo,
+    cjb.etapa_jornada             AS etapa_jornada
+
+FROM tb_controle_jb_propostas cjb
+
+INNER JOIN tb_propostas p
+    ON CAST(cjb.id_proposta AS VARCHAR(50))
+     = CAST(p.id_pessoa    AS VARCHAR(50))
+
+WHERE cjb.id_proposta IS NOT NULL
