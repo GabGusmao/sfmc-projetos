@@ -1,0 +1,30 @@
+SELECT
+    /* =====================================================
+       CHAVE DE RELACIONAMENTO
+       ===================================================== */
+    p.id_proposta,
+
+    /* =====================================================
+       CAMPOS ORIUNDOS DA TB_PROPOSTAS
+       ===================================================== */
+    ISNULL(p.tipo_bem, 'NAO_INFORMADO')           AS tipo_bem,
+    p.dt_alocacao                                AS dt_alocacao,
+    p.dt_proposta                                AS dt_proposta,
+    ISNULL(p.contrato_assinado, 0)               AS contrato_assinado,
+    ISNULL(p.proposta_paga, 0)                   AS proposta_paga,
+    ISNULL(p.valor_proposta, 0)                  AS valor_proposta,
+    p.id_pessoa                                  AS id_pessoa,
+
+    /* =====================================================
+       CAMPOS ORIUNDOS DA TB_CONTROLE_JB_PROPOSTAS
+       ===================================================== */
+    ISNULL(cjb.ultimo_conteudo_enviado, 'NUNCA_ENVIADO') AS ultimo_conteudo_enviado,
+    cjb.dt_ultimo_conteudo                              AS dt_ultimo_conteudo,
+    ISNULL(cjb.etapa_jornada, 'NAO_INICIADA')           AS etapa_jornada
+
+FROM tb_propostas p
+
+INNER JOIN tb_controle_jb_propostas cjb
+    ON p.id_proposta = cjb.id_proposta
+
+WHERE p.id_proposta IS NOT NULL
