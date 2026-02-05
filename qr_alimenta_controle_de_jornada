@@ -1,0 +1,28 @@
+SELECT
+    /* =====================================================
+       CHAVE DO UPDATE (NÃO ALTERAR)
+       ===================================================== */
+    p.id_proposta AS id_proposta,
+
+    /* =====================================================
+       CAMPOS ATUALIZÁVEIS (SOBRESCREVE SEMPRE)
+       ===================================================== */
+    p.tipo_bem          AS tipo_bem,
+    p.dt_alocacao       AS dt_alocacao,
+    p.dt_proposta       AS dt_proposta,
+    p.dt_pagamento      AS dt_pagamento,
+    p.contrato_assinado AS contrato_assinado,
+    p.proposta_paga     AS proposta_paga,
+    p.valor_proposta    AS valor_proposta
+
+FROM tb_propostas p
+
+/* =====================================================
+   ATUALIZA SOMENTE QUEM JÁ EXISTE NA DE OFICIAL
+   ===================================================== */
+WHERE EXISTS (
+    SELECT 1
+    FROM de_relatorio_pagamento_atribuicao r
+    WHERE CAST(r.id_proposta AS VARCHAR(50))
+        = CAST(p.id_proposta AS VARCHAR(50))
+)
