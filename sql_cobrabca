@@ -1,0 +1,84 @@
+SELECT
+    /* ===============================
+       CAMPOS DA DE (tb_pos_vendas)
+       =============================== */
+    pv.ponto_venda,
+    pv.cd_grupo,
+    pv.cd_cota,
+    pv.data_alocacao,
+    pv.valor_bem,
+    pv.tipo_bem,
+    pv.data_cadastro_orb,
+    pv.data_proxima_assembleia,
+    pv.forma_pagamento,
+    pv.situacao_contrato,
+    pv.data_contemplacao,
+    pv.tipo_contemplacao,
+    pv.ofertou_lance,
+    pv.link_boleto_lance,
+    pv.data_pagamento_lance,
+    pv.analise_credito_aprovada,
+    pv.etapa_contemplacao,
+    pv.status_etapa_contemplacao,
+    pv.saldo_devedor,
+    pv.qtde_parcelas_atraso,
+    pv.parcela_em_aberto,
+    pv.link_boleto_mes,
+    pv.data_pagamento,
+    pv.cd_pix_unificado,
+    pv.enviar_boas_vindas,
+    pv.id_pessoa,
+    pv.cpf_cnpj,
+    pv.id_proposta,
+
+    /* ===============================
+       ENRIQUECIMENTO (tb_propostas)
+       =============================== */
+    LEFT(NULLIF(LTRIM(RTRIM(p.email)), ''), 254)   AS email,
+    LEFT(NULLIF(LTRIM(RTRIM(p.celular)), ''), 50)  AS celular,
+    LEFT(NULLIF(LTRIM(RTRIM(p.primeiro_nome)), ''), 50) AS primeiro_nome,
+    LEFT(NULLIF(LTRIM(RTRIM(p.link_contrato_naoassinado)), ''), 255) AS link_contrato_naoassinado,
+
+    /* ===============================
+       LINK CONTRATO ASSINADO
+       =============================== */
+    LEFT(
+        COALESCE(
+            NULLIF(LTRIM(RTRIM(pv.link_contrato_assinado)), ''),
+            NULLIF(LTRIM(RTRIM(p.link_contrato_assinado)), '')
+        ),
+        50
+    ) AS link_contrato_assinado,
+
+   /* ===============================
+       DIA DO ENVIO (somente número)
+       =============================== */
+    DAY(GETDATE()) AS diaenvio
+
+FROM tb_pos_vendas pv
+LEFT JOIN tb_propostas p
+    ON p.id_proposta = pv.id_proposta
+
+WHERE
+    pv.id_proposta IS NOT NULL
+    AND LTRIM(RTRIM(pv.id_proposta)) <> ''
+    AND pv.id_pessoa IS NOT NULL
+    AND LTRIM(RTRIM(pv.id_pessoa)) <> ''
+
+    AND pv.situacao_contrato IN (
+        'EXTRAJUDICIAL.02.PCL',
+        'NORMAL.00.PCL',
+        'DEPTO. ADM.01.PCL',
+        'DEPTO.RECUPERAÇÃO.01A06.PCL'
+    )
+
+    AND ISNULL(pv.qtde_parcelas_atraso, 0) >= 1
+
+    AND pv.ponto_venda IN (
+        '000257',
+        '000394',
+        '000400',
+        '000407',
+        '000459',
+        '000405'
+    )
