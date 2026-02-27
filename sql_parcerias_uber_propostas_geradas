@@ -1,0 +1,152 @@
+/* =========================================================
+   QR1 — INTERSEÇÃO UBER x PROPOSTAS (MAIS RECENTE)
+
+   AJUSTE:
+   • Considera somente propostas:
+       - dt_alocacao IS NULL
+         OU
+       - proposta_paga = 0
+   ========================================================= */
+
+SELECT
+    /* ===============================
+       CAMPOS DA TB_API_UBER (APENAS OS 8)
+       =============================== */
+    x.contato,
+    x.contato_normalizado,
+    x.tipo_contato,
+    x.status,
+    x.ip,
+    x.data_criacao,
+    x.id_pessoa,
+
+    /* ===============================
+       CAMPOS DA TB_PROPOSTAS
+       =============================== */
+    x.id_proposta,
+    x.id_produto,
+    x.email,
+    x.celular,
+    x.dt_proposta,
+    x.dt_fechamento,
+    x.dt_validade,
+    x.dt_ultima_modificacao,
+    x.dt_venda,
+    x.cd_ponto_venda,
+    x.vendedor,
+    x.status_proposta,
+    x.valor_proposta,
+    x.tem_seguro,
+    x.tipo_pagamento,
+    x.dt_pagamento,
+    x.link_boleto,
+    x.link_cartao,
+    x.cnpj_cpf,
+    x.link_contrato_naoassinado,
+    x.cd_pix,
+    x.tipo_bem,
+    x.ponto_venda,
+    x.tipo_lance,
+    x.primeiro_nome,
+    x.cd_pix_unificado,
+    x.valor_pix_unificado,
+    x.debito_automatico,
+    x.dt_adesao,
+    x.dt_alocacao,
+    x.link_contrato_assinado,
+    x.uber_retencao,
+    x.dt_contemplacao,
+    x.acesso_aplicativo,
+    x.cli_information,
+    x.api_uber,
+    x.cd_cota,
+    x.cd_grupo,
+    x.contrato_assinado,
+    x.proposta_paga
+FROM (
+    SELECT
+        api.contato,
+        api.contato_normalizado,
+        api.tipo_contato,
+        api.status,
+        api.ip,
+        api.data_criacao,
+        api.id_pessoa,
+
+        p.id_proposta,
+        p.id_produto,
+        p.email,
+        p.celular,
+        p.dt_proposta,
+        p.dt_fechamento,
+        p.dt_validade,
+        p.dt_ultima_modificacao,
+        p.dt_venda,
+        p.cd_ponto_venda,
+        p.vendedor,
+        p.status_proposta,
+        p.valor_proposta,
+        p.tem_seguro,
+        p.tipo_pagamento,
+        p.dt_pagamento,
+        p.link_boleto,
+        p.link_cartao,
+        p.cnpj_cpf,
+        p.link_contrato_naoassinado,
+        p.cd_pix,
+        p.tipo_bem,
+        p.ponto_venda,
+        p.tipo_lance,
+        p.primeiro_nome,
+        p.cd_pix_unificado,
+        p.valor_pix_unificado,
+        p.debito_automatico,
+        p.dt_adesao,
+        p.dt_alocacao,
+        p.link_contrato_assinado,
+        p.uber_retencao,
+        p.dt_contemplacao,
+        p.acesso_aplicativo,
+        p.cli_information,
+        p.api_uber,
+        p.cd_cota,
+        p.cd_grupo,
+        p.contrato_assinado,
+        p.proposta_paga,
+
+        ROW_NUMBER() OVER (
+            PARTITION BY LTRIM(RTRIM(api.contato_normalizado))
+            ORDER BY
+                p.dt_proposta DESC,
+                p.id_proposta DESC
+        ) AS rn
+
+    FROM tb_api_uber api
+    INNER JOIN tb_propostas p
+        ON (
+               api.contato_normalizado LIKE '%@%'
+               AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.email))
+           )
+        OR (
+               api.contato_normalizado NOT LIKE '%@%'
+               AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.celular))
+           )
+
+    WHERE api.contato_normalizado IS NOT NULL
+      AND LTRIM(RTRIM(api.contato_normalizado)) <> ''
+      AND p.id_proposta IS NOT NULL
+      AND LTRIM(RTRIM(p.id_proposta)) <> ''
+
+      /* ✅ CONDIÇÃO QUE VOCÊ PEDIU */
+      AND (
+            p.dt_alocacao IS NULL
+         OR ISNULL(p.proposta_paga,0) = 0
+      )
+
+      /* seu filtro de data */
+      AND CAST(api.data_criacao AS DATE)
+          BETWEEN CAST(DATEADD(day, -1, GETDATE()) AS DATE)
+              AND CAST(GETDATE() AS DATE)
+
+) x
+WHERE x.rn = 1
