@@ -1,0 +1,37 @@
+/* ============================================================
+   NAO GEROU PROPOSTA 
+============================================================ */
+
+SELECT
+    api.contato,
+    LEFT(LTRIM(RTRIM(api.contato_normalizado)),150) AS contato_normalizado,
+    api.tipo_contato,
+    api.status,
+    api.ip,
+    api.cpf_cnpj,
+    api.id_pessoa,
+    CAST(api.data_criacao AS DATE) AS data_criacao,
+
+    '' AS id_proposta,
+    0  AS proposta_paga
+
+FROM tb_api_uber api
+
+LEFT JOIN tb_propostas pe
+    ON CHARINDEX('@', api.contato_normalizado) > 0
+   AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(pe.email))
+
+LEFT JOIN tb_propostas pc
+    ON LEFT(api.contato_normalizado,2) = '55'
+   AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(pc.celular))
+
+WHERE api.contato_normalizado IS NOT NULL
+  AND LTRIM(RTRIM(api.contato_normalizado)) <> ''
+  AND pe.id_proposta IS NULL
+  AND pc.id_proposta IS NULL
+
+/* ===== D-1 (ATIVAR DEPOIS) =====
+AND CAST(api.data_criacao AS DATE)
+    BETWEEN CAST(DATEADD(day,-1,GETDATE()) AS DATE)
+        AND CAST(GETDATE() AS DATE)
+*/
