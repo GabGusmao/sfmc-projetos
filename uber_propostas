@@ -1,52 +1,184 @@
+/* ============================================================
+   QRY_ENTRADA_UBER_API_PROPOSTAS (SEM EXIGIR PROPOSTA ATIVA)
+
+   - Se existir match com tb_propostas (email/celular) => traz campos da proposta + API
+   - Se não existir => traz só API e preenche id_proposta (PK) com fallback
+============================================================ */
+
 SELECT
-    /* =====================================================
-       PK / SUBSCRIBER KEY
-       ===================================================== */
-    api.contato_normalizado,
-
-    /* =====================================================
-       ID_PROPOSTA – NUNCA NULL
-       ===================================================== */
-    ISNULL(p.id_proposta, 'NAO_TEM_PROPOSTA') AS id_proposta,
-    
-
-    /* =====================================================
-       CPF_CNPJ – NUNCA NULL
-       ===================================================== */
-    ISNULL(p.cpf_cnpj, 'NAO_TEM_CPF_CNPJ') AS cpf_cnpj,
-
-    /* =====================================================
-       DADOS ORIGEM UBER
-       ===================================================== */
-    api.contato,
-    api.tipo_contato,
-    ISNULL(api.ip, '') AS ip,
-    api.data_criacao,
-
-    /* =====================================================
-       DADOS DA PROPOSTA (SE EXISTIR)
-       ===================================================== */
-    ISNULL(p.email, '')                AS email,
-    ISNULL(p.celular, '')              AS celular,
-    ISNULL(p.status_proposta, 'Vazio') AS status_proposta,
+    /* ===== CAMPOS DA PROPOSTA ===== */
+    p.id_proposta,
+    p.id_produto,
+    p.cnpj_cpf,
+    p.nome_completo,
+    p.email,
+    p.celular,
     p.dt_proposta,
+    p.dt_fechamento,
+    p.dt_validade,
+    p.dt_ultima_modificacao,
+    p.dt_venda,
+    p.cd_ponto_venda,
+    p.vendedor,
+    p.status_proposta,
+    p.valor_proposta,
+    p.cd_promocional,
+    p.tem_seguro,
+    p.tipo_pagamento,
+    p.dt_pagamento,
+    p.link_boleto,
+    p.link_cartao,
+    p.link_contrato_naoassinado,
+    p.cd_pix,
+    CASE WHEN p.cd_pix IS NULL OR p.cd_pix = '' THEN 0 ELSE 1 END AS cd_pix1,
+    p.end_point,
+    p.tipo_bem,
+    p.ponto_venda,
+    p.tipo_lance,
+    p.primeiro_nome,
+    p.cd_pix_unificado,
+    p.valor_pix_unificado,
+    p.debito_automatico,
+    p.dt_adesao,
+    p.dt_alocacao,
+    p.link_contrato_assinado,
+    p.uber_retencao,
+    p.dt_contemplacao,
+    p.acesso_aplicativo,
+    p.cli_information,
+    p.api_uber,
+    p.cd_cota,
+    p.cd_grupo,
 
-    /* =====================================================
-       CONTROLE
-       ===================================================== */
-    GETDATE() AS data_entrada
+    /* ===== CAMPOS DA API UBER ===== */
+    ISNULL(api.contato, '') AS contato,
+    LEFT(LTRIM(RTRIM(ISNULL(api.contato_normalizado,''))), 50) AS contato_normalizado,
+    ISNULL(api.tipo_contato, '') AS tipo_contato,
+    ISNULL(api.status, '') AS status,
+    ISNULL(api.ip, '') AS ip,
+    api.data_criacao AS data_criacao,
+
+    /* ===== IDENTIFICAÇÃO DO CANAL ===== */
+    CASE
+        WHEN CHARINDEX('@', api.contato_normalizado) > 0 THEN 'email'
+        WHEN LEFT(api.contato_normalizado, 2) = '55' THEN 'celular'
+        ELSE 'desconhecido'
+    END AS tipo_chave,
+
+    /* ===== CAMPOS DE CONTROLE ===== */
+    GETDATE() AS data_Entrada,
+    RIGHT('0' + CAST(DATEPART(DAY, GETDATE()) AS VARCHAR(2)), 2) AS dia_Entrada,
+    'br' AS Locale
+
+FROM tb_propostas p
+INNER JOIN tb_api_uber api
+    ON (
+        (CHARINDEX('@', api.contato_normalizado) > 0
+            AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.email)))
+        OR
+        (LEFT(api.contato_normalizado, 2) = '55'
+            AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.celular)))
+    )
+WHERE
+    (
+        (CHARINDEX('@', api.contato_normalizado) > 0 AND p.email IS NOT NULL)
+        OR
+        (LEFT(api.contato_normalizado, 2) = '55' AND p.celular IS NOT NULL)
+    )
+    /* Se quiser voltar com PIX obrigatório, descomente:
+    AND (p.cd_pix IS NOT NULL AND p.cd_pix <> '')
+    */
+
+UNION ALL
+
+/* ============================================================
+   SEM PROPOSTA:
+   - traz apenas API Uber quando NÃO existe match em tb_propostas
+   - campos de proposta vazios
+   - id_proposta (PK) gerado: 'sem_prop|<chave>'
+============================================================ */
+SELECT
+    /* id_proposta (PK/NOT NULL) */
+    'sem_prop|' + LEFT(
+        LTRIM(RTRIM(
+            CASE
+                WHEN api.contato_normalizado IS NULL OR LTRIM(RTRIM(api.contato_normalizado)) = ''
+                    THEN ISNULL(api.contato,'sem_chave')
+                ELSE api.contato_normalizado
+            END
+        )),
+        41
+    ) AS id_proposta,
+
+    '' AS id_produto,
+    '' AS cnpj_cpf,
+    '' AS nome_completo,
+    CASE WHEN CHARINDEX('@', api.contato_normalizado) > 0 THEN api.contato_normalizado ELSE '' END AS email,
+    CASE WHEN LEFT(api.contato_normalizado, 2) = '55' THEN api.contato_normalizado ELSE '' END AS celular,
+    NULL AS dt_proposta,
+    NULL AS dt_fechamento,
+    NULL AS dt_validade,
+    NULL AS dt_ultima_modificacao,
+    NULL AS dt_venda,
+    '' AS cd_ponto_venda,
+    '' AS vendedor,
+    '' AS status_proposta,
+    0  AS valor_proposta,
+    '' AS cd_promocional,
+    '' AS tem_seguro,
+    '' AS tipo_pagamento,
+    NULL AS dt_pagamento,
+    '' AS link_boleto,
+    '' AS link_cartao,
+    '' AS link_contrato_naoassinado,
+    '' AS cd_pix,
+    0  AS cd_pix1,
+    '' AS end_point,
+    '' AS tipo_bem,
+    '' AS ponto_venda,
+    '' AS tipo_lance,
+    '' AS primeiro_nome,
+    '' AS cd_pix_unificado,
+    0  AS valor_pix_unificado,
+    '' AS debito_automatico,
+    NULL AS dt_adesao,
+    NULL AS dt_alocacao,
+    '' AS link_contrato_assinado,
+    '' AS uber_retencao,
+    NULL AS dt_contemplacao,
+    '' AS acesso_aplicativo,
+    '' AS cli_information,
+    '' AS api_uber,
+    0  AS cd_cota,
+    '' AS cd_grupo,
+
+    ISNULL(api.contato, '') AS contato,
+    LEFT(LTRIM(RTRIM(ISNULL(api.contato_normalizado,''))), 50) AS contato_normalizado,
+    ISNULL(api.tipo_contato, '') AS tipo_contato,
+    ISNULL(api.status, '') AS status,
+    ISNULL(api.ip, '') AS ip,
+    api.data_criacao AS data_criacao,
+
+    CASE
+        WHEN CHARINDEX('@', api.contato_normalizado) > 0 THEN 'email'
+        WHEN LEFT(api.contato_normalizado, 2) = '55' THEN 'celular'
+        ELSE 'desconhecido'
+    END AS tipo_chave,
+
+    GETDATE() AS data_Entrada,
+    RIGHT('0' + CAST(DATEPART(DAY, GETDATE()) AS VARCHAR(2)), 2) AS dia_Entrada,
+    'br' AS Locale
 
 FROM tb_api_uber api
-
 LEFT JOIN tb_propostas p
-   ON (
-        /* MATCH POR EMAIL */
-        (api.contato_normalizado LIKE '%@%'
-         AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.email)))
-
+    ON (
+        (CHARINDEX('@', api.contato_normalizado) > 0
+            AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.email)))
         OR
-
-        /* MATCH POR CELULAR */
-        (api.contato_normalizado LIKE '55%'
-         AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.celular)))
-      )
+        (LEFT(api.contato_normalizado, 2) = '55'
+            AND LTRIM(RTRIM(api.contato_normalizado)) = LTRIM(RTRIM(p.celular)))
+    )
+WHERE
+    api.contato_normalizado IS NOT NULL
+    AND LTRIM(RTRIM(api.contato_normalizado)) <> ''
+    AND p.id_proposta IS NULL
